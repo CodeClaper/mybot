@@ -13,6 +13,7 @@ docs/
 *.pyz
 *.pywz
 *.pyzz
+*.python-version
 .venv/
 venv/
 __pycache__/
