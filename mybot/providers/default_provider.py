@@ -9,7 +9,11 @@ class DefaultProvider(BaseProvider):
     def __init__(self) -> None:
         pass
 
-    async def chat(self, user_message: str) -> LLMResponse:
+    async def chat(
+        self, 
+        user_message: str,
+        tools: list[dict[str, Any]] | None = None
+    ) -> LLMResponse:
         kargs: dict[str, Any] = {
             "model": "deepseek/deepseek-chat",
             "messages": [
@@ -21,6 +25,11 @@ class DefaultProvider(BaseProvider):
             "max_token": 8094,
             "temperature": 0.1
         }
+
+        if tools:
+            kargs["tools"] = tools
+            kargs["tool_choice"] = "auto"
+
         try:
             response = await acompletion(**kargs)
             return self._parse_reponse(response)

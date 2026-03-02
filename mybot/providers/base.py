@@ -32,5 +32,12 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    async def chat(self, user_message: str) -> LLMResponse:
+    async def chat(
+        self, 
+        user_message: str,
+        tools: list[dict[str, Any]] | None = None
+    ) -> LLMResponse:
+        """
+        Send a chat completion request.
+        """
         pass
