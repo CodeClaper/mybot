@@ -6,6 +6,7 @@ class AgentLoop:
     def __init__(self, provider: BaseProvider) -> None:
         self.provider = provider
         self.tool_registry = TooRegistry()
+        self._register_defaul_tools()
 
 
     def _register_defaul_tools(self) -> None:

@@ -5,4 +5,4 @@ from mybot.providers.default_provider import DefaultProvider
 
 if __name__ == "__main__":
     agent = AgentLoop(DefaultProvider())
-    asyncio.run(agent.run("hello world"))
+    asyncio.run(agent.run("Please help me calculate (1 + 3) * 5"))
