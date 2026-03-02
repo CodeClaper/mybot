@@ -25,3 +25,16 @@ class TooRegistry:
 
     def get_definations(self) -> list[dict[str, Any]]:
         return [tool.to_schema() for tool in self._tools.values()]
+
+    async def execute(self, name: str, params: dict[str, Any]) ->str:
+        """Execute a tool by name and given params. """
+        tool = self.get(name)
+        if not tool:
+            return f"Error: Tool '{name}' not found."
+        
+        try:
+            result = await tool.execute(**params)
+            return result
+        except Exception as e:
+            return f"Error executing {name}: {str(e)}"
+

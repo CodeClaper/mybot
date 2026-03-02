@@ -1,4 +1,4 @@
-from mybot.providers.base import BaseProvider
+from mybot.providers.base import BaseProvider, LLMResponse
 from mybot.tools.math import MathTool
 from mybot.tools.registry import TooRegistry
 
@@ -12,7 +12,7 @@ class AgentLoop:
     def _register_defaul_tools(self) -> None:
         self.tool_registry.register(MathTool())
 
-    async def run(self, user_message):
+    async def run(self, user_message) -> None:
         iteration = 0
         while iteration < 10:
             iteration += 1
@@ -27,9 +27,14 @@ class AgentLoop:
                 print(f"LLM error:{response.content}")
                 break
             elif response.has_tool_calls:
-                pass
+                await self._execute_tool(response)
             else:
                 print(response.content)
                 break
-            
+    
+    async def _execute_tool(self, response: LLMResponse) -> None:
+        for tool_call in response.tool_calls:
+            result = await self.tool_registry.execute(tool_call.name, tool_call.arguments)
+            print(result)
+        pass
 
