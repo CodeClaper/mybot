@@ -1,0 +1,2 @@
+# About litellm
+litellm>=1.82.0
