@@ -17,6 +17,7 @@ class InboundMessage:
     session_key_override: str | None = None
 
 
+@dataclass
 class OutboundMessage:
     """Message to send to a chat channel."""
 

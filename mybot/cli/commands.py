@@ -2,6 +2,7 @@ import os
 import typer
 import signal
 import asyncio
+import uuid
 
 from pathlib import Path
 from rich.console import Console
@@ -12,6 +13,8 @@ from prompt_toolkit.patch_stdout import patch_stdout
 
 from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
+from mybot.cli.bus.message import InboundMessage
+from mybot.cli.bus.queue import MessageBus
 from mybot.providers.default_provider import DefaultProvider
 
 os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
@@ -32,7 +35,9 @@ def main(version: bool = typer.Option(None, "--version", "-v", callback=version_
 
 @app.command()
 def agent():
-    agent = AgentLoop(DefaultProvider())
+    chat_id = str(uuid.uuid4())
+    bus = MessageBus()
+    agent = AgentLoop(provider= DefaultProvider(), bus=bus)
     console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
     _init_prompt_session()
 
@@ -47,6 +52,29 @@ def agent():
     signal.signal(signal.SIGINT, _exist_on_sigint)
 
     async def run_interactive():
+        loop_task = asyncio.create_task(agent.run())
+        turn_done = asyncio.Event()
+        turn_done.set()
+        turn_response: list[str] = []
+
+        async def _consume_outbound():
+            while True:
+                try:
+                    msg = await asyncio.wait_for(bus.consume_outbound(), timeout=1.0)
+                    if not turn_done.is_set():
+                        if msg.content:
+                            turn_response.append(msg.content)
+                        turn_done.set()
+                    elif msg.content:
+                        console.print()
+                        print(turn_response[0])
+                except asyncio.TimeoutError:
+                    continue
+                except asyncio.CancelledError:
+                    break
+
+        outbound_task = asyncio.create_task(_consume_outbound())
+
         try:
             while True:
                 try:
@@ -57,9 +85,18 @@ def agent():
                     if _is_exit_command(command):
                         console.print("\nGoodbye!")
                         break
+                    turn_done.clear()
+                    await bus.publish_inbound(InboundMessage(
+                        channel="cli",
+                        sender_id="user",
+                        chat_id = chat_id,
+                        content=user_input
+                    ))
                     with _thinking_mode():
-                        pass
-                    print(user_input)
+                        await turn_done.wait()
+
+                    if turn_response:
+                        print(turn_response[0])
                 except KeyboardInterrupt:
                     console.print("\nGoodbye!")
                     break
@@ -67,7 +104,8 @@ def agent():
                     console.print("\nGoodbye!")
                     break
         finally:
-            pass
+            outbound_task.cancel()
+            loop_task.cancel()
     
     asyncio.run(run_interactive())
 
