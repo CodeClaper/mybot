@@ -28,12 +28,15 @@ class TooRegistry:
 
     async def execute(self, name: str, params: dict[str, Any]) ->str:
         """Execute a tool by name and given params. """
+        _HINT = "\n\n[Analyze the error above and try a different approach.]"
         tool = self.get(name)
         if not tool:
             return f"Error: Tool '{name}' not found."
         
         try:
             result = await tool.execute(**params)
+            if isinstance(result, str) and result.startswith("Error"):
+                return result + _HINT
             return result
         except Exception as e:
             return f"Error executing {name}: {str(e)}"

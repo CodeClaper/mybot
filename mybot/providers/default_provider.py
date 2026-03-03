@@ -2,8 +2,15 @@ from ast import arguments
 from litellm import acompletion
 from typing import Any
 import json_repair
+import secrets
+import string
 
 from mybot.providers.base import BaseProvider, LLMResponse, ToolCallRequest
+
+_ALNUM = string.ascii_letters + string.digits
+
+def _short_tool_id() -> str:
+    return "".join(secrets.choice(_ALNUM) for _ in range(9))
 
 class DefaultProvider(BaseProvider):
     def __init__(self) -> None:
@@ -11,15 +18,12 @@ class DefaultProvider(BaseProvider):
 
     async def chat(
         self, 
-        user_message: str,
+        messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None
     ) -> LLMResponse:
         kargs: dict[str, Any] = {
             "model": "deepseek/deepseek-chat",
-            "messages": [
-                {"role": "system", "content": "Your are a help assistant."},
-                {"role": "user", "content": user_message}
-            ],
+            "messages": messages,
             "api_key": "sk-6b09e81523294dc5b84a4583124be3c5",
             "base_url": "https://api.deepseek.com",
             "max_token": 8094,
@@ -48,7 +52,7 @@ class DefaultProvider(BaseProvider):
                     args = json_repair.loads(args)
 
                 tool_calls.append(ToolCallRequest(
-                    id="",
+                    id=_short_tool_id(),
                     name=tc.function.name,
                     arguments=args
                 ))

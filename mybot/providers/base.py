@@ -34,7 +34,7 @@ class BaseProvider(ABC):
     @abstractmethod
     async def chat(
         self, 
-        user_message: str,
+        messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None
     ) -> LLMResponse:
         """
