@@ -79,7 +79,7 @@ class AgentLoop:
             )
 
             if response.has_error:
-                print(f"LLM error:{response.content}")
+                logger.error(f"LLM error:{response.content}")
                 break
             elif response.has_tool_calls:
                 tool_call_dicts = [
