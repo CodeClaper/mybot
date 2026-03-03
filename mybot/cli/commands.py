@@ -5,7 +5,9 @@ import asyncio
 import uuid
 
 from pathlib import Path
+from rich.text import Text
 from rich.console import Console
+from rich.markdown import Markdown
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.formatted_text import HTML
@@ -85,18 +87,21 @@ def agent():
                     if _is_exit_command(command):
                         console.print("\nGoodbye!")
                         break
+
                     turn_done.clear()
+                    turn_response.clear()
                     await bus.publish_inbound(InboundMessage(
                         channel="cli",
                         sender_id="user",
                         chat_id = chat_id,
                         content=user_input
                     ))
+
                     with _thinking_mode():
                         await turn_done.wait()
 
                     if turn_response:
-                        print(turn_response[0])
+                        _print_agent_response(turn_response[0], render_markdown=True)
                 except KeyboardInterrupt:
                     console.print("\nGoodbye!")
                     break
@@ -132,4 +137,14 @@ async def _read_interactive_input_async() -> str:
 
 def _is_exit_command(command: str) -> bool:
     return command.lower() in ["/exit", "/quite", ":q"]
+
+
+def _print_agent_response(response: str, render_markdown: bool) -> None:
+    """Render assistant response with consistent terminal styling. """
+    content = response or ''
+    body = Markdown(content) if render_markdown else Text(content)
+    console.print()
+    console.print(f"[cyan]{__logo__} mybot[/cyan]")
+    console.print(body)
+    console.print()
 

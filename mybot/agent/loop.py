@@ -78,7 +78,6 @@ class AgentLoop:
                 tools=self.tool_registry.get_definations(),
             )
 
-            print(response)
             if response.has_error:
                 print(f"LLM error:{response.content}")
                 break
