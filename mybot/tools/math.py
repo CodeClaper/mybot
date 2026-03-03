@@ -1,6 +1,5 @@
 from typing import Any
 from mybot.tools.base import Tool
-from loguru import logger
 
 class MathTool(Tool):
     def __init__(self) -> None:
@@ -22,7 +21,7 @@ class MathTool(Tool):
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["add", "multipy"],
+                    "enum": ["add", "subtract", "multipy", "divide"],
                     "description": "Math methods."
                 },
                 "arguements": {
@@ -38,10 +37,13 @@ class MathTool(Tool):
         action: str,
         arguements: dict[str, int]
     ) -> str:
-        logger.info("Invoke tool math.")
         if action == 'add':
             return str(arguements["a"] + arguements["b"])
         elif action == 'multipy':
             return str(arguements["a"] * arguements["b"])
+        elif action == 'subtract':
+            return str(arguements["a"] - arguements["b"])
+        elif action == 'divide':
+            return str(arguements["a"] / arguements["b"])
         else:
             return f"Unkonwo actionL {action}"

@@ -15,8 +15,8 @@ from prompt_toolkit.patch_stdout import patch_stdout
 
 from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
-from mybot.cli.bus.message import InboundMessage
-from mybot.cli.bus.queue import MessageBus
+from mybot.bus.message import InboundMessage
+from mybot.bus.queue import MessageBus
 from mybot.providers.default_provider import DefaultProvider
 
 os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"

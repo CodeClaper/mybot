@@ -1,6 +1,6 @@
 import asyncio
 
-from mybot.cli.bus.message import InboundMessage, OutboundMessage
+from mybot.bus.message import InboundMessage, OutboundMessage
 
 class MessageBus:
     """

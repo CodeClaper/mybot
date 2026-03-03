@@ -4,8 +4,8 @@ import json
 from typing import Any
 from loguru import logger
 
-from mybot.cli.bus.message import InboundMessage, OutboundMessage
-from mybot.cli.bus.queue import MessageBus
+from mybot.bus.message import InboundMessage, OutboundMessage
+from mybot.bus.queue import MessageBus
 from mybot.providers.base import BaseProvider
 from mybot.tools.math import MathTool
 from mybot.tools.registry import TooRegistry
