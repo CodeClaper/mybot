@@ -8,6 +8,7 @@ from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.providers.base import BaseProvider
 from mybot.tools.math import MathTool
+from mybot.tools.shell import ShellTool
 from mybot.tools.registry import TooRegistry
 
 class AgentLoop:
@@ -23,10 +24,6 @@ class AgentLoop:
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
 
-
-    def _register_defaul_tools(self) -> None:
-        self.tool_registry.register(MathTool())
-
     async def run(self) -> None:
         """Agent loop run."""
         self._running = True
@@ -41,6 +38,13 @@ class AgentLoop:
     def stop(self) -> None:
         """Agent loop stop."""
         self._running = False
+
+
+    def _register_defaul_tools(self) -> None:
+        """Register default tools."""
+        self.tool_registry.register(MathTool())
+        self.tool_registry.register(ShellTool())
+
 
     async def _dispatch(self, msg: InboundMessage) -> None:
         """Dispath the message."""
