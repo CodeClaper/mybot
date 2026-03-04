@@ -42,6 +42,7 @@ def agent():
     bus = MessageBus()
     agent = AgentLoop(
         provider= DefaultProvider(), 
+        workspace=_workspace_path(),
         bus=bus,
         session_manager=SessionManager(_workspace_path())
     )

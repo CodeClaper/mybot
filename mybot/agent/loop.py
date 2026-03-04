@@ -1,12 +1,13 @@
 import asyncio
 import json
 
+from pathlib import Path
 from typing import Any
 from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
-from mybot.memory import session
+from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.tools.math import MathTool
@@ -16,6 +17,7 @@ from mybot.tools.registry import TooRegistry
 class AgentLoop:
     def __init__(
         self, 
+        workspace: Path,
         provider: BaseProvider,
         bus: MessageBus,
         session_manager: SessionManager
@@ -25,6 +27,7 @@ class AgentLoop:
         self.provider = provider
         self.bus = bus
         self.session_manager = session_manager
+        self.context = ContextBuilder(workspace)
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
 
@@ -71,11 +74,10 @@ class AgentLoop:
         """Process a single inbound message and return the response."""
         session = self.session_manager.get_or_create(msg.chat_id)
         history = session.get_history(100)
-        initial_messages = self._build_messages(msg, history)
+        initial_messages = self.context.build_messages(msg, history)
         final_content, messages = await self._run_agent_loop(initial_messages)
         self._save_session_messages(session, messages, 1 + len(history))
-        return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
-                               content=final_content or "Agent loop task completed.")
+        return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content=final_content or "Agent loop task completed.")
 
 
     async def _run_agent_loop(
@@ -126,14 +128,6 @@ class AgentLoop:
 
         return final_content, messages
 
-    def _build_messages(self, msg: InboundMessage, history: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Build messages."""
-        return [
-            {"role": "system", "content": "You are a personal AI Assistant."},
-            {"role": "user", "content": msg.content},
-            *history
-        ]
-
     def _add_assistant_message(
         self,
         messages: list[dict[str, Any]], 
@@ -164,10 +158,18 @@ class AgentLoop:
         messages.append({"role": "tool", "tool_call_id": tool_call_id, "name": tool_name, "content": result})
         return messages
 
-    def _save_session_messages(self, session: Session, messages: list[dict[str, Any]], skip: int) ->None:
+    def _save_session_messages(
+        self, 
+        session: Session, 
+        messages: list[dict[str, Any]], 
+        skip: int
+    ) ->None:
         """Save messages into session."""
         for m in messages[skip:]:
-            role, content = m.get("role"), m.get("content")
+            entry = dict(m)
+            role, content = entry.get("role"), entry.get("content")
             if role is None or content is None:
                 continue
-            session.add_message(m)
+            if role == "tool" and len(content) > 500:
+                entry["content"] = content[:500] + f"\n...(truncated {len(content) - 500} characters.)"
+            session.add_message(entry)
