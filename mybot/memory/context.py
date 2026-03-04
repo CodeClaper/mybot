@@ -11,7 +11,7 @@ class ContextBuilder:
     
     def build_system_promp(self) -> str:
         return f"""# mybot {__logo__}
-    You are mybot, a helpful, personal AI assistant.
+    You are mybot, a personal AI assistant.
     """
 
     def build_messages(self, msg: InboundMessage, history: list[dict[str, Any]]) -> list[dict[str, Any]]:
