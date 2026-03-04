@@ -17,6 +17,7 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.memory.session import SessionManager
 from mybot.providers.default_provider import DefaultProvider
 
 os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
@@ -39,7 +40,11 @@ def main(version: bool = typer.Option(None, "--version", "-v", callback=version_
 def agent():
     chat_id = str(uuid.uuid4())
     bus = MessageBus()
-    agent = AgentLoop(provider= DefaultProvider(), bus=bus)
+    agent = AgentLoop(
+        provider= DefaultProvider(), 
+        bus=bus,
+        session_manager=SessionManager(_workspace_path())
+    )
     console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
     _init_prompt_session()
 
@@ -123,6 +128,9 @@ def _init_prompt_session() -> None:
         enable_open_in_editor=False,
         multiline=False
     )
+
+def _workspace_path() -> Path:
+    return Path("~/.mybot").expanduser()
 
 async def _read_interactive_input_async() -> str:
     if _PROMPT_SESSION is None:

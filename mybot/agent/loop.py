@@ -6,6 +6,8 @@ from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.memory import session
+from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.tools.math import MathTool
 from mybot.tools.shell import ShellTool
@@ -15,12 +17,14 @@ class AgentLoop:
     def __init__(
         self, 
         provider: BaseProvider,
-        bus: MessageBus
+        bus: MessageBus,
+        session_manager: SessionManager
     ) -> None:
         self._running = False
         self.max_iterations = 20
         self.provider = provider
         self.bus = bus
+        self.session_manager = session_manager
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
 
@@ -64,14 +68,22 @@ class AgentLoop:
             ))
 
     async def _process_message(self, msg: InboundMessage) -> OutboundMessage | None:
-        final_content = await self._run_agent_loop(self._build_messages(msg))
+        """Process a single inbound message and return the response."""
+        session = self.session_manager.get_or_create(msg.chat_id)
+        history = session.get_history(100)
+        initial_messages = self._build_messages(msg, history)
+        final_content, messages = await self._run_agent_loop(initial_messages)
+        self._save_session_messages(session, messages, 1 + len(history))
         return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
                                content=final_content or "Agent loop task completed.")
 
 
-    async def _run_agent_loop(self, initial_message: list[dict]) -> str | None:
+    async def _run_agent_loop(
+        self, 
+        initial_messages: list[dict]
+    ) -> tuple[str | None, list[dict]]:
         """Run agent loop."""
-        messages = initial_message
+        messages = initial_messages
         final_content = None
         iteration = 0
         while iteration < self.max_iterations:
@@ -112,13 +124,14 @@ class AgentLoop:
         if iteration >= self.max_iterations:
             final_content = (f"I reached the maximum number of tool call iterations ({self.max_iterations}) ")
 
-        return final_content
+        return final_content, messages
 
-    def _build_messages(self, msg: InboundMessage) -> list[dict[str, Any]]:
+    def _build_messages(self, msg: InboundMessage, history: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Build messages."""
         return [
             {"role": "system", "content": "You are a personal AI Assistant."},
-            {"role": "user", "content": msg.content}
+            {"role": "user", "content": msg.content},
+            *history
         ]
 
     def _add_assistant_message(
@@ -150,3 +163,11 @@ class AgentLoop:
         """Add a tool result to the message list."""
         messages.append({"role": "tool", "tool_call_id": tool_call_id, "name": tool_name, "content": result})
         return messages
+
+    def _save_session_messages(self, session: Session, messages: list[dict[str, Any]], skip: int) ->None:
+        """Save messages into session."""
+        for m in messages[skip:]:
+            role, content = m.get("role"), m.get("content")
+            if role is None or content is None:
+                continue
+            session.add_message(m)
