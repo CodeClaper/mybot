@@ -20,8 +20,6 @@ from mybot.bus.queue import MessageBus
 from mybot.memory.session import SessionManager
 from mybot.providers.default_provider import DefaultProvider
 
-os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
-
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
 console = Console()
 
