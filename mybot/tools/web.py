@@ -1,13 +1,14 @@
 import httpx
 
+from loguru import logger
 from typing import Any
 from mybot.tools.base import Tool
 
 class WebSearchTool(Tool):
     
-    def __init__(self, api_key: str | None = None) -> None:
+    def __init__(self, api_key: str | None = None, proxy: str | None = None) -> None:
         self.api_key = api_key
-        pass
+        self.proxy = proxy
 
     @property
     def name(self) -> str:
@@ -22,7 +23,7 @@ class WebSearchTool(Tool):
         return {
             "type": "object",
             "properties": {
-                "query": {"type": "string", "description": "Search Query"},
+                "query": {"type": "string", "description": "Search Query, use it when user's question requires up-to-date."},
                 "count": {"type": "integer", "description": "Results (1-10)", "mininum": 1, "maxinum": 10},
             },
             "required": ["query"]
@@ -34,7 +35,27 @@ class WebSearchTool(Tool):
             return "Error: Api key not configure."
         try:
             n = 10 if count is None else min(count, 10)
+            async with httpx.AsyncClient(proxy=self.proxy) as client:
+                r = await client.get(
+                    "https://serpapi.com/search",
+                    params={"q": query, "engine": "google", "api_key": self.api_key},
+                    headers={"Accept": "application/json"},
+                    timeout=10.0
+                )
+                r.raise_for_status()
+            
+            results = r.json().get("organic_results", [])[:n]
+            if not results:
+                return f"No results for: {query}"
+
+            lines = [f"Results for: {query}\n"]
+            for i, item in enumerate(results, 1):
+                lines.append(f"{i}. {item.get('title', '')}\n   {item.get('link', '')}\n   {item.get('about_this_result').get('source').get('description')}")
+
+            return "\n".join(lines)
+        except httpx.ProtocolError as e:
+            logger.error("Web search proxy error: {}", e)
+            return f"Web search proxy error: {e}"
         except Exception as e:
             return f"Web search error: {e}"
-        return ""
     

@@ -12,6 +12,7 @@ from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.tools.shell import ShellTool
 from mybot.tools.registry import TooRegistry
+from mybot.tools.web import WebSearchTool
 
 class AgentLoop:
     def __init__(
@@ -49,6 +50,7 @@ class AgentLoop:
     def _register_defaul_tools(self) -> None:
         """Register default tools."""
         self.tool_registry.register(ShellTool())
+        self.tool_registry.register(WebSearchTool(api_key="09ce2270a9b8aa7e348bb4ead702976e086a9cff52a53d77355fc4b080bb0441"))
 
 
     async def _dispatch(self, msg: InboundMessage) -> None:
