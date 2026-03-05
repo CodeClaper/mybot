@@ -49,7 +49,6 @@ class AgentLoop:
 
     def _register_defaul_tools(self) -> None:
         """Register default tools."""
-        self.tool_registry.register(MathTool())
         self.tool_registry.register(ShellTool())
 
 
