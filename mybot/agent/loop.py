@@ -2,7 +2,7 @@ import asyncio
 import json
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Awaitable, Callable
 from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
@@ -10,7 +10,6 @@ from mybot.bus.queue import MessageBus
 from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
-from mybot.tools.math import MathTool
 from mybot.tools.shell import ShellTool
 from mybot.tools.registry import TooRegistry
 
@@ -74,14 +73,27 @@ class AgentLoop:
         session = self.session_manager.get_or_create(msg.chat_id)
         history = session.get_history(100)
         initial_messages = self.context.build_messages(msg, history)
-        final_content, messages = await self._run_agent_loop(initial_messages)
+
+        async def _bus_process(content: str, tool_hint: bool = False) -> None:
+            meta = dict(msg.metadata or {})
+            meta["_progress"] = True
+            meta["_tool_hint"] = tool_hint
+            await self.bus.publish_outbound(OutboundMessage(
+                channel=msg.channel,
+                chat_id=msg.chat_id,
+                content=content,
+                metadata=meta
+            ))
+            
+        final_content, messages = await self._run_agent_loop(initial_messages, _bus_process)
         self._save_session_messages(session, messages, 1 + len(history))
         return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content=final_content or "Agent loop task completed.")
 
 
     async def _run_agent_loop(
         self, 
-        initial_messages: list[dict]
+        initial_messages: list[dict],
+        on_process: Callable[..., Awaitable[None]] | None = None,
     ) -> tuple[str | None, list[dict]]:
         """Run agent loop."""
         messages = initial_messages
@@ -99,6 +111,9 @@ class AgentLoop:
                 logger.error(f"LLM error:{response.content}")
                 break
             elif response.has_tool_calls:
+                if on_process:
+                    await on_process(self._tool_hint(response.tool_calls), tool_hint=True)
+
                 tool_call_dicts = [
                     {
                         "id": tc.id,
@@ -172,3 +187,16 @@ class AgentLoop:
             if role == "tool" and len(content) > 500:
                 entry["content"] = content[:500] + f"\n...(truncated {len(content) - 500} characters.)"
             session.add_message(entry)
+
+
+    def _tool_hint(self, tool_calls: list) ->str:
+        """Print out hint tool."""
+        def _fmt(tc):
+            args = (tc.arguments[0] if isinstance(tc.arguments, list) else tc.arguments) or {}
+            val = next(iter(args.values()), None) if isinstance(args, dict) else None
+            if not isinstance(val, str):
+                return tc.name
+            return f"{tc.name}(\"{val[:40]}\")" if len(val) > 40  else f"{tc.name}(\"{val}\")"
+        return ", ".join(_fmt(tc) for tc in tool_calls)
+
+

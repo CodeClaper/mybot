@@ -48,7 +48,7 @@ def agent():
     _init_prompt_session()
 
     def _thinking_mode():
-        return console.status(f"[dim]{__logo__} mybot is thinking...[/dim]", spinner="dots")
+        return console.status(f"[dim]{__logo__} mybot is thinking...[/dim]", spinner="moon")
     
     def _exist_on_sigint(signum, frame):
         console.print("\nGoodbye!")
@@ -67,13 +67,18 @@ def agent():
             while True:
                 try:
                     msg = await asyncio.wait_for(bus.consume_outbound(), timeout=1.0)
-                    if not turn_done.is_set():
+                    if msg.metadata.get("_progress"):
+                        is_tool_hint = msg.metadata.get("_tool_hint", False)
+                        if is_tool_hint:
+                            console.print(f"  [dim]↳ {msg.content}[/dim]")
+                        pass
+                    elif not turn_done.is_set():
                         if msg.content:
                             turn_response.append(msg.content)
                         turn_done.set()
                     elif msg.content:
                         console.print()
-                        print(turn_response[0])
+                        _print_agent_response(turn_response[0], render_markdown=True)
                 except asyncio.TimeoutError:
                     continue
                 except asyncio.CancelledError:

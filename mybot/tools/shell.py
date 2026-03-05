@@ -3,7 +3,6 @@ import os
 import re
 
 from typing import Any
-from loguru import logger
 from mybot.tools.base import Tool
 
 class ShellTool(Tool):
@@ -60,7 +59,6 @@ class ShellTool(Tool):
 
     
     async def execute(self, command: str, working_dir: str | None = None, **kwargs: Any) -> str:
-        logger.info("command: {}, working_dir: {}", command, working_dir)
         cwd = working_dir or self.working_dir or os.getcwd()
         guard_error = self._guard_command(command, cwd)
         if guard_error:
