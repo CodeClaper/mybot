@@ -1,3 +1,4 @@
+from dataclasses import field
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from pydantic_settings import BaseSettings
@@ -24,9 +25,30 @@ class AgentsConfig(Base):
 class ChannelsConfig(Base):
     """Channels configuration."""
     
+class ProviderConfig(Base):
+    """LLM provider configuration. """
+
+    api_key: str = ""
+    api_base: str | None = None
+
+class ProvidersConfig(Base):
+    """LLM providers configuration. """
+
+    anthropic: ProviderConfig = Field(default_factory=ProviderConfig)
+    openai: ProviderConfig = Field(default_factory=ProviderConfig)
+    gemini: ProviderConfig = Field(default_factory=ProviderConfig)
+    openrouter: ProviderConfig = Field(default_factory=ProviderConfig)
+    deepseek: ProviderConfig = Field(default_factory=ProviderConfig)
+    groq: ProviderConfig = Field(default_factory=ProviderConfig)
+    zhipu: ProviderConfig = Field(default_factory=ProviderConfig)
+    vllm: ProviderConfig = Field(default_factory=ProviderConfig)
+    minimax: ProviderConfig = Field(default_factory=ProviderConfig)
+    moonshot: ProviderConfig = Field(default_factory=ProviderConfig)
+
 
 class Config(BaseSettings):
     """Root configuration."""
     
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     channels: ChannelsConfig = Field(default_factory=ChannelsConfig)
+    providers: ProvidersConfig = Field(default_factory=ProvidersConfig)

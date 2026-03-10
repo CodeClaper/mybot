@@ -1,4 +1,5 @@
 import os
+import sys
 import typer
 import signal
 import asyncio
@@ -18,6 +19,7 @@ from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.loader import get_config_path, get_worksapce_path, load_config, save_config
+from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
 from mybot.providers.default_provider import DefaultProvider
@@ -32,6 +34,7 @@ def version_callback(value: bool):
         console.print(f"{__logo__} mybot {__version__}")
         raise typer.Exit()
 
+
 @app.callback()
 def main(version: bool = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)):
     pass
@@ -40,28 +43,25 @@ def main(version: bool = typer.Option(None, "--version", "-v", callback=version_
 def onboard():
     config_path = get_config_path()
     workspace_path = get_worksapce_path()
+    config = Config()
 
     if config_path.exists():
         console.print(f"[yellow]Config already exists at {config_path}[/yellow]")
         console.print("  [bold]y[/bold] = overwrite with defaults (existing values will be lost)")
         console.print("  [bold]N[/bold] = keep old config, and adding new fields")
-        if typer.confirm("Overwrite?"):
-            config = Config()
-            save_config(config)
-            console.print(f"✅ Config reset to defaults at {config_path}")
-        else:
-            config = load_config()
-            save_config(config)
-            console.print(f"✅ Config refresh at {config_path} (keep values preseved)")
-    else:
-        save_config(Config())
-        console.print(f"✅ Created config at {config_path}")
+        if not typer.confirm("Overwrite?"):
+            console.print(f"Config keeps values preseved.")
+            sys.exit(0)
 
     if not workspace_path.exists():
         workspace_path.mkdir(parents=True, exist_ok=True)
-        console.print(f"✅ Created worksapce at {workspace_path}")
+        console.print(f"[green]✓[/green] Created worksapce at {workspace_path}")
 
-    console.print(f"\n{__logo__} mybot is ready, get started!")
+    question_config(config)
+    save_config(config)
+    console.print(f"[green]✓[/green] Created config at {config_path}")
+
+    console.print(f"\n{__logo__} mybot is ready!")
 
 @app.command()
 def agent():
