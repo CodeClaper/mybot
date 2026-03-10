@@ -18,7 +18,7 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
-from mybot.config.loader import get_config_path, get_worksapce_path, load_config, save_config
+from mybot.config.loader import get_config_path, get_history_path, get_worksapce_path, load_config, save_config
 from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
@@ -43,6 +43,7 @@ def main(version: bool = typer.Option(None, "--version", "-v", callback=version_
 def onboard():
     config_path = get_config_path()
     workspace_path = get_worksapce_path()
+    history_path = get_history_path()
     config = Config()
 
     if config_path.exists():
@@ -56,6 +57,10 @@ def onboard():
     if not workspace_path.exists():
         workspace_path.mkdir(parents=True, exist_ok=True)
         console.print(f"[green]✓[/green] Created worksapce at {workspace_path}")
+
+    if not history_path.exists():
+        history_path.mkdir(parents=True, exist_ok=True)
+        console.print(f"[green]✓[/green] Created history at {history_path}")
 
     question_config(config)
     save_config(config)
