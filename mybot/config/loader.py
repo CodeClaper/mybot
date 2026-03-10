@@ -3,10 +3,13 @@ from pathlib import Path
 
 from mybot.config.schema import Config
 
-
 def get_config_path() -> Path:
     """Get the default configuration file path."""
     return Path.home() / ".mybot" / "config.json"
+
+def get_worksapce_path() -> Path:
+    """Get the workspace path."""
+    return Path.home() / ".mybot" / "workspace"
 
 
 def load_config() -> Config:

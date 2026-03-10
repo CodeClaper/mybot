@@ -8,7 +8,6 @@ class Base(BaseModel):
 
 class AgentDefaults(Base):
     """Agent default configuration."""
-    workspace: str = "~/.mybot/workspace"
     model: str = "deepseek/deepseek-chat"
     provider: str = "auto"  # Provider name (e.g. "anthropic", "openrouter") or "auto" for auto-detection
     max_tokens: int = 8192

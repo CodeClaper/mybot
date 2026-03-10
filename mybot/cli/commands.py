@@ -17,6 +17,8 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.config.loader import get_config_path, get_worksapce_path, load_config, save_config
+from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
 from mybot.providers.default_provider import DefaultProvider
 
@@ -33,6 +35,33 @@ def version_callback(value: bool):
 @app.callback()
 def main(version: bool = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)):
     pass
+
+@app.command()
+def onboard():
+    config_path = get_config_path()
+    workspace_path = get_worksapce_path()
+
+    if config_path.exists():
+        console.print(f"[yellow]Config already exists at {config_path}[/yellow]")
+        console.print("  [bold]y[/bold] = overwrite with defaults (existing values will be lost)")
+        console.print("  [bold]N[/bold] = keep old config, and adding new fields")
+        if typer.confirm("Overwrite?"):
+            config = Config()
+            save_config(config)
+            console.print(f"✅ Config reset to defaults at {config_path}")
+        else:
+            config = load_config()
+            save_config(config)
+            console.print(f"✅ Config refresh at {config_path} (keep values preseved)")
+    else:
+        save_config(Config())
+        console.print(f"✅ Created config at {config_path}")
+
+    if not workspace_path.exists():
+        workspace_path.mkdir(parents=True, exist_ok=True)
+        console.print(f"✅ Created worksapce at {workspace_path}")
+
+    console.print(f"\n{__logo__} mybot is ready, get started!")
 
 @app.command()
 def agent():
