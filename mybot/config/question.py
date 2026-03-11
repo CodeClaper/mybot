@@ -71,7 +71,11 @@ def _question_agent_default(config: Config):
     console.print("(2) Config the agent default.")
 
     model = questionary.text("Input your model:").ask()
-    maxTokens = questionary.text("Input your maxTokens (default is 8192):").ask()
+    maxTokens = questionary.text("Input your maxTokens (default is 8192):", validate=lambda text: True if text.isdigit() else "Please input valid number" ).ask()
     temperature = questionary.text("Input the temperature (0.1 - 1.0):").ask()
-
+    
+    config.agents.defaults.model = model
+    config.agents.defaults.max_tokens = int(maxTokens)
+    config.agents.defaults.temperature = float(maxTokens)
     console.print(f"[green]✓[/green] Created agent default done, model: {model}, maxTokens: {maxTokens}, temperature: {temperature}")
+
