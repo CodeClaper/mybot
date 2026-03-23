@@ -9,7 +9,7 @@ from readability import Document
 from urllib.parse import urlparse
 from mybot.tools.base import Tool
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_2) AppleWebKit/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 MAX_REDIRECTS = 5  # Limit redirects to prevent DoS attacks
 
 def _validate_url(url: str) -> tuple[bool, str]:
@@ -140,7 +140,7 @@ class WebFetchTool(Tool):
             return json.dumps({"url": url, "finalUrl": str(r.url), "status": r.status_code,
                                "extractor": extractor, "truncated": truncated, "length": len(text), "text": text})
         except httpx.ProtocolError as e:
-            logger.error("Web fetch proxy error for {}: {}", url, e)
+            logger.error("Web fetch proxy protocol error for {}: {}", url, e)
             return json.dumps({"error": f"proxy error: {e}", "url": url}, ensure_ascii=False)
         except Exception as e:
             logger.error("Web fetch error for {}: {}", url, e)
