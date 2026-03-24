@@ -72,3 +72,18 @@ class Config(BaseSettings):
     channels: ChannelsConfig = Field(default_factory=ChannelsConfig)
     providers: ProvidersConfig = Field(default_factory=ProvidersConfig)
     tools: ToolConfig = Field(default_factory=ToolConfig)
+
+    
+    def get_provider(self, model: str | None) -> ProviderConfig | None:
+        if model is None:
+            return None
+        elif "deepseek" in model:
+            return self.providers.deepseek
+        elif "openai" in model:
+            return self.providers.openai
+        elif "anthropic" in model:
+            return self.providers.anthropic
+        elif "gemini" in model:
+            return self.providers.gemini
+        return None
+

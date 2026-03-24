@@ -28,8 +28,9 @@ class LLMResponse:
         return self.finish_reason == "error"
 
 class BaseProvider(ABC):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, api_key: str | None = None, api_base: str | None = None) -> None:
+        self.api_key = api_key
+        self.api_base = api_base
 
     @abstractmethod
     async def chat(

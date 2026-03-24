@@ -22,6 +22,7 @@ from mybot.config.loader import get_config_path, get_history_path, get_worksapce
 from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
+from mybot.providers.base import BaseProvider
 from mybot.providers.default_provider import DefaultProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
@@ -72,12 +73,13 @@ def onboard():
 def agent():
     chat_id = str(uuid.uuid4())
     bus = MessageBus()
+    config = load_config()
     agent = AgentLoop(
-        provider= DefaultProvider(), 
+        provider= _make_provider(config), 
         workspace=_workspace_path(),
         bus=bus,
         session_manager=SessionManager(_workspace_path()),
-        config=load_config()
+        config=config
     )
     console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
     _init_prompt_session()
@@ -195,3 +197,14 @@ def _print_agent_response(response: str, render_markdown: bool) -> None:
     console.print(body)
     console.print()
 
+
+def _make_provider(config: Config) -> BaseProvider:
+    """Create the appropriate LLM provider by config. """
+    
+    model = config.agents.defaults.model
+    provider = config.get_provider(model)
+    return DefaultProvider(
+        default_model=model,
+        api_key=provider.api_key if provider else None,
+        api_base=provider.api_base if provider else None
+    )

@@ -12,26 +12,39 @@ def _short_tool_id() -> str:
     return "".join(secrets.choice(_ALNUM) for _ in range(9))
 
 class DefaultProvider(BaseProvider):
-    def __init__(self) -> None:
-        pass
+    def __init__(
+        self,
+        api_key: str | None = None,
+        api_base: str | None = None,
+        default_model: str = "deepseek/deepseek-chat"
+    ) -> None:
+        super().__init__(api_key, api_base)
+        self.default_model = default_model
 
     async def chat(
         self, 
         messages: list[dict[str, Any]],
-        tools: list[dict[str, Any]] | None = None
+        tools: list[dict[str, Any]] | None = None,
+        model: str | None = None,
+        max_tokens: int = 8094,
+        temperature: float = 0.1
     ) -> LLMResponse:
         kargs: dict[str, Any] = {
-            "model": "deepseek/deepseek-chat",
+            "model": model or self.default_model,
             "messages": messages,
-            "api_key": "sk-6b09e81523294dc5b84a4583124be3c5",
-            "base_url": "https://api.deepseek.com",
-            "max_token": 8094,
-            "temperature": 0.1
+            "max_tokens": max_tokens,
+            "temperature": temperature
         }
 
         if tools:
             kargs["tools"] = tools
             kargs["tool_choice"] = "auto"
+        
+        if self.api_key:
+            kargs["api_key"] = self.api_key
+
+        if self.api_base:
+            kargs["api_base"] = self.api_base
 
         try:
             response = await acompletion(**kargs)
