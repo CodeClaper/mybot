@@ -45,6 +45,7 @@ class ProvidersConfig(Base):
     vllm: ProviderConfig = Field(default_factory=ProviderConfig)
     minimax: ProviderConfig = Field(default_factory=ProviderConfig)
     moonshot: ProviderConfig = Field(default_factory=ProviderConfig)
+    local: ProviderConfig = Field(default_factory=ProviderConfig)
 
 class WebSearchConfig(Base):
     """Web search tool configuration."""
@@ -75,6 +76,7 @@ class Config(BaseSettings):
 
     
     def get_provider(self, model: str | None) -> ProviderConfig | None:
+        """Get approciate provider by model. """
         if model is None:
             return None
         elif "deepseek" in model:
@@ -85,5 +87,7 @@ class Config(BaseSettings):
             return self.providers.anthropic
         elif "gemini" in model:
             return self.providers.gemini
+        elif "local" in model:
+            return self.providers.local
         return None
 

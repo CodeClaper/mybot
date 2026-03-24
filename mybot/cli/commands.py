@@ -24,6 +24,7 @@ from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.providers.default_provider import DefaultProvider
+from mybot.providers.local_provider import LocalProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
 console = Console()
@@ -203,8 +204,11 @@ def _make_provider(config: Config) -> BaseProvider:
     
     model = config.agents.defaults.model
     provider = config.get_provider(model)
-    return DefaultProvider(
-        default_model=model,
-        api_key=provider.api_key if provider else None,
-        api_base=provider.api_base if provider else None
-    )
+    if model == "local":
+        return LocalProvider()
+    else:
+        return DefaultProvider(
+            default_model=model,
+            api_key=provider.api_key if provider else None,
+            api_base=provider.api_base if provider else None
+        )
