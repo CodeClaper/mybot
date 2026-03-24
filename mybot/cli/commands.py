@@ -62,7 +62,7 @@ def onboard():
         history_path.mkdir(parents=True, exist_ok=True)
         console.print(f"[green]✓[/green] Created history at {history_path}")
 
-    question_config(config)
+    ## question_config(config)
     save_config(config)
     console.print(f"[green]✓[/green] Created config at {config_path}")
 

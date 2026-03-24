@@ -20,13 +20,17 @@ class AgentLoop:
         workspace: Path,
         provider: BaseProvider,
         bus: MessageBus,
-        session_manager: SessionManager
+        session_manager: SessionManager,
+        web_proxy: str | None = None,
+        chrome_api_key: str | None = None
     ) -> None:
         self._running = False
         self.max_iterations = 20
         self.provider = provider
         self.bus = bus
         self.session_manager = session_manager
+        self.web_proxy = web_proxy
+        self.chrome_api_key = chrome_api_key
         self.context = ContextBuilder(workspace)
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
@@ -51,7 +55,7 @@ class AgentLoop:
         """Register default tools."""
         self.tool_registry.register(ShellTool())
         self.tool_registry.register(WebSearchTool(api_key="09ce2270a9b8aa7e348bb4ead702976e086a9cff52a53d77355fc4b080bb0441"))
-        self.tool_registry.register(WebFetchTool())
+        self.tool_registry.register(WebFetchTool(proxy=self.web_proxy))
 
 
     async def _dispatch(self, msg: InboundMessage) -> None:
