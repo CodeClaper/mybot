@@ -76,7 +76,8 @@ def agent():
         provider= DefaultProvider(), 
         workspace=_workspace_path(),
         bus=bus,
-        session_manager=SessionManager(_workspace_path())
+        session_manager=SessionManager(_workspace_path()),
+        config=load_config()
     )
     console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
     _init_prompt_session()

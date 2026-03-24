@@ -2,11 +2,13 @@ import asyncio
 import json
 
 from pathlib import Path
+from re import search
 from typing import Any, Awaitable, Callable
 from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.config.schema import Config, WebToolsConfig
 from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
@@ -21,16 +23,14 @@ class AgentLoop:
         provider: BaseProvider,
         bus: MessageBus,
         session_manager: SessionManager,
-        web_proxy: str | None = None,
-        chrome_api_key: str | None = None
+        config: Config
     ) -> None:
         self._running = False
         self.max_iterations = 20
         self.provider = provider
         self.bus = bus
         self.session_manager = session_manager
-        self.web_proxy = web_proxy
-        self.chrome_api_key = chrome_api_key
+        self.config = config
         self.context = ContextBuilder(workspace)
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
@@ -53,9 +53,10 @@ class AgentLoop:
 
     def _register_defaul_tools(self) -> None:
         """Register default tools."""
+        web_config = self.config.tools.web
         self.tool_registry.register(ShellTool())
-        self.tool_registry.register(WebSearchTool(api_key="09ce2270a9b8aa7e348bb4ead702976e086a9cff52a53d77355fc4b080bb0441"))
-        self.tool_registry.register(WebFetchTool(proxy=self.web_proxy))
+        self.tool_registry.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
+        self.tool_registry.register(WebFetchTool(proxy=web_config.proxy))
 
 
     async def _dispatch(self, msg: InboundMessage) -> None:
