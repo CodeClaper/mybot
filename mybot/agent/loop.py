@@ -9,6 +9,7 @@ from loguru import logger
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.schema import Config
+from mybot.memory import context
 from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
@@ -79,6 +80,21 @@ class AgentLoop:
     async def _process_message(self, msg: InboundMessage) -> OutboundMessage | None:
         """Process a single inbound message and return the response."""
         session = self.session_manager.get_or_create(msg.chat_id)
+        cmd = msg.content.strip().lower()
+        
+        ## For system command.
+        if cmd == '/new':
+            session.clear()
+            self.session_manager.save(session)
+            self.session_manager.invalidate(session.key)
+            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content="New session started")
+        elif cmd == '/history':
+            history = session.get_history(100)
+            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content=json.dumps(history, ensure_ascii=False, indent=4))
+        elif cmd == '/help':
+            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, 
+                                   content="System commands:/new - Start a new session/exit - Exit current task/help - Show available commands")
+
         history = session.get_history(100)
         initial_messages = self.context.build_messages(msg, history)
 

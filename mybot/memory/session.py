@@ -115,6 +115,10 @@ class SessionManager:
 
         self._cache[session.key] = session
 
+    def invalidate(self, key: str) -> None:
+        """Remove a session from the in-memory cache."""
+        self._cache.pop(key, None)
+
     
     def _get_session_path(self, key: str) -> Path:
         """Get session file path."""
