@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from pydantic_settings import BaseSettings
 
+from mybot.providers.registry import PROVIDERS
+
 class Base(BaseModel):
     """Base model"""
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
@@ -74,20 +76,26 @@ class Config(BaseSettings):
     providers: ProvidersConfig = Field(default_factory=ProvidersConfig)
     tools: ToolConfig = Field(default_factory=ToolConfig)
 
-    
+    def _match_provider(
+        self, model: str | None
+    ) -> tuple[ProviderConfig | None, str | None]:
+        from mybot.providers.registry import PROVIDERS
+
+        model_lower = (model or self.agents.defaults.model).lower()
+        model_prefix = model_lower.split("/", 1)[0] if "/" in model_lower else ""
+
+        for spec in PROVIDERS:
+            p = getattr(self.providers, spec.name, None)
+            if p and model_prefix and model_prefix == spec.name:
+                return p, spec.name
+        return None, None
+
     def get_provider(self, model: str | None) -> ProviderConfig | None:
         """Get approciate provider by model. """
-        if model is None:
-            return None
-        elif "deepseek" in model:
-            return self.providers.deepseek
-        elif "openai" in model:
-            return self.providers.openai
-        elif "anthropic" in model:
-            return self.providers.anthropic
-        elif "gemini" in model:
-            return self.providers.gemini
-        elif "local" in model:
-            return self.providers.local
-        return None
+        provider, _ = self._match_provider(model)
+        return provider
 
+    def get_provider_name(self, model: str | None) -> str | None:
+        """Get approciate provider name by model. """
+        _, name = self._match_provider(model)
+        return name
