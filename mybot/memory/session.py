@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from loguru import logger
 
-from mybot.utils.helper import ensure_dir
+from mybot.config.path import ensure_dir
 
 
 @dataclass

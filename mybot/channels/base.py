@@ -4,6 +4,7 @@ from typing import Any
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.config.schema import Config
 
 
 class BaseChannel(ABC):
@@ -17,7 +18,7 @@ class BaseChannel(ABC):
     name: str = "base"
     display_name = "Base"
 
-    def __init__(self, config: Any, bus: MessageBus) -> None:
+    def __init__(self, config: Config, bus: MessageBus) -> None:
         """
         Initialize the channel.
 
