@@ -8,7 +8,7 @@ from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
-from mybot.config.schema import Config, WebToolsConfig
+from mybot.config.schema import Config
 from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
@@ -95,6 +95,7 @@ class AgentLoop:
             
         final_content, messages = await self._run_agent_loop(initial_messages, _bus_process)
         self._save_session_messages(session, messages, 1 + len(history))
+        self.session_manager.save(session)
         return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content=final_content or "Agent loop task completed.")
 
 

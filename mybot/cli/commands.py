@@ -186,7 +186,7 @@ async def _read_interactive_input_async() -> str:
         raise KeyboardInterrupt from e
 
 def _is_exit_command(command: str) -> bool:
-    return command.lower() in ["/exit", "/quite", ":q"]
+    return command.lower() in ["/exit", "/quit", ":q"]
 
 
 def _print_agent_response(response: str, render_markdown: bool) -> None:
