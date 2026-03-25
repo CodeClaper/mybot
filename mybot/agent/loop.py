@@ -27,7 +27,7 @@ class AgentLoop:
         config: Config
     ) -> None:
         self._running = False
-        self.max_iterations = 20
+        self.max_iterations = 100
         self.provider = provider
         self.bus = bus
         self.session_manager = session_manager
