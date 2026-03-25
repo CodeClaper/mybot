@@ -1,10 +1,8 @@
-from dataclasses import field
-from openai.types.responses.tool_param import WebSearchTool
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from pydantic_settings import BaseSettings
 
-from mybot.providers.registry import PROVIDERS
+DEFAULT_LONG_POLL_TIMEOUT_S = 35
 
 class Base(BaseModel):
     """Base model"""
@@ -25,8 +23,19 @@ class AgentsConfig(Base):
     """Agent configuration."""
     defaults: AgentDefaults = Field(default_factory=AgentDefaults)
 
+class WeixinConfig(Base):
+    """Person weixin channel configuration."""
+    enabled: bool = False
+    allow_list: list[str] = Field(default_factory=list)
+    base_url: str = "https//ilinkai.weixin.qq.com"
+    cdn_base_url: str = "https://novac2c.cdn.weixin.qq.com/c2c"
+    poll_timeout: int = DEFAULT_LONG_POLL_TIMEOUT_S
+
+
 class ChannelsConfig(Base):
     """Channels configuration."""
+    weixin: WeixinConfig = Field(default_factory=WeixinConfig) 
+
     
 class ProviderConfig(Base):
     """LLM provider configuration. """

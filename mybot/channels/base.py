@@ -15,6 +15,7 @@ class BaseChannel(ABC):
     """
 
     name: str = "base"
+    display_name = "Base"
 
     def __init__(self, config: Any, bus: MessageBus) -> None:
         """
