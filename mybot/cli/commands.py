@@ -18,7 +18,8 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
-from mybot.config.loader import get_config_path, get_history_path, get_worksapce_path, load_config, save_config
+from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
+from mybot.config.loader import load_config, save_config
 from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.memory.session import SessionManager
