@@ -14,6 +14,7 @@ from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.tools.shell import ShellTool
+from mybot.tools.message import MessageTool
 from mybot.tools.registry import TooRegistry
 from mybot.tools.web import WebFetchTool, WebSearchTool
 
@@ -58,6 +59,7 @@ class AgentLoop:
         self.tool_registry.register(ShellTool())
         self.tool_registry.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
         self.tool_registry.register(WebFetchTool(proxy=web_config.proxy))
+        self.tool_registry.register(MessageTool(send_callback=self.bus.publish_outbound))
 
 
     async def _dispatch(self, msg: InboundMessage) -> None:
