@@ -13,7 +13,6 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.patch_stdout import patch_stdout
-
 from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
@@ -182,12 +181,11 @@ def channel_login(channel_name: str = typer.Argument(..., help="Channel name (e.
 
     all_channels = discover_all()
     channel_class = all_channels[channel_name]
-    channel = channel_class(config, bus=None)
-    
-    if asyncio.run(channel.login()):
+    channel = channel_class(config, bus=MessageBus())
+      
+    success = asyncio.run(channel.login())
+    if not success:
         raise typer.Exit(1)
-        
-
 
 def _init_prompt_session() -> None:
     global _PROMPT_SESSION

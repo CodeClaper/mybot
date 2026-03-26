@@ -6,6 +6,11 @@ def ensure_dir(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+def ensure_file(path: Path) -> Path:
+    """Ensure file exists, if not create it."""
+    path.touch(exist_ok=True)
+    return path
+
 def get_config_path() -> Path:
     """Get the default configuration file path."""
     return Path.home() / ".mybot" / "config.json"
