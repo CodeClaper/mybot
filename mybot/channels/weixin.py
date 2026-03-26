@@ -1,6 +1,6 @@
-
+from logging import error
+import uuid
 import asyncio
-import re
 import time
 import json
 import base64
@@ -16,6 +16,7 @@ from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
 from mybot.config.path import ensure_file, get_runtime_subdir
 from mybot.config.schema import Config, WeixinConfig
+from mybot.utils.helper import split_message
 
 MAX_QR_REFRESH_COUNT = 3
 WEIXIN_CHANNEL_VERSION = "1.0.3"
@@ -31,6 +32,8 @@ ITEM_VIDEO = 5
 # MessageType  (1 = inbound from user, 2 = outbound from bot)
 MESSAGE_TYPE_USER = 1
 MESSAGE_TYPE_BOT = 2
+# MessageState
+MESSAGE_STATE_FINISH = 2
 
 # Session-expired error code
 ERRCODE_SESSION_EXPIRED = -14
@@ -80,8 +83,6 @@ class WeixinChannel(BaseChannel):
         self._client = httpx.AsyncClient(timeout=httpx.Timeout(self.config.poll_timeout, connect=30), follow_redirects=True)
         
         if not self._load_state():
-            return
-        elif not self._load_state():
             if not await self._qr_login():
                 logger.error("WeChat login failed. Run 'mybot channels login weixin' to authenticate.")
                 self._running = False
@@ -105,7 +106,11 @@ class WeixinChannel(BaseChannel):
         if not content:
             return
         try:
-            chunks = 
+            chunks = split_message(content, WEIXIN_MAX_MESSAGE_LEN)
+            for chunk in chunks:
+                await self._send_text(msg.chat_id, chunk)
+        except Exception as e:
+            logger.error("Error sending WeChat message: {}", e)
 
     async def stop(self) -> None:
         self._running = False
@@ -115,6 +120,34 @@ class WeixinChannel(BaseChannel):
         self._save_state()
         logger.info("WeChat channel stopped.")
 
+
+    async def _send_text(self, to_user_id: str, text: str) -> None:
+        """Send a text message to WeChat."""
+
+        client_id = f"mybot-{uuid.uuid4().hex[:12]}"
+        item_list: list[dict] = []
+        if text:
+            item_list.append({"type": ITEM_TEXT, "text_item": {"text": text}})
+        
+        weixin_msg: dict[str, Any] = {
+            "from_user_id": "",
+            "to_user_id": to_user_id,
+            "client_id": client_id,
+            "message_type": MESSAGE_TYPE_BOT,
+            "message_state": MESSAGE_STATE_FINISH
+        }
+        if item_list:
+            weixin_msg["item_list"] = item_list
+        
+        body: dict[str, Any] = {
+            "msg": weixin_msg,
+            "base_info": BASE_INFO
+        }
+
+        data = await self._api_post("ilink/bot/sendmessage", body)
+        errcode = data.get("errcode", 0)
+        if errcode and errcode != 0:
+            logger.warning("WeChat send error (code {}): {}", errcode, data.get("errmsg", ""))
 
     #--------------------------------------------------------------------
     # The state manager

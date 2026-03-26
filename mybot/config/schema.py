@@ -27,7 +27,7 @@ class WeixinConfig(Base):
     """Person weixin channel configuration."""
     enabled: bool = False
     allow_list: list[str] = Field(default_factory=list)
-    base_url: str = "https//ilinkai.weixin.qq.com"
+    base_url: str = "https://ilinkai.weixin.qq.com"
     cdn_base_url: str = "https://novac2c.cdn.weixin.qq.com/c2c"
     poll_timeout: int = DEFAULT_LONG_POLL_TIMEOUT_S
 
