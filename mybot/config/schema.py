@@ -58,6 +58,12 @@ class ProvidersConfig(Base):
     moonshot: ProviderConfig = Field(default_factory=ProviderConfig)
     local: ProviderConfig = Field(default_factory=ProviderConfig)
 
+class GatewayConfig(Base):
+    """Gateway server configuration."""
+    
+    host: str = "0.0.0.0"
+    port: int = 8118
+
 class WebSearchConfig(Base):
     """Web search tool configuration."""
     
@@ -82,6 +88,7 @@ class Config(BaseSettings):
     
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     channels: ChannelsConfig = Field(default_factory=ChannelsConfig)
+    gateway: GatewayConfig = Field(default_factory=GatewayConfig)
     providers: ProvidersConfig = Field(default_factory=ProvidersConfig)
     tools: ToolConfig = Field(default_factory=ToolConfig)
 

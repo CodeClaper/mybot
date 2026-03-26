@@ -42,6 +42,9 @@ def version_callback(value: bool):
 def main(version: bool = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)):
     pass
 
+#------------------------------------------
+# onboard setup the config.
+#------------------------------------------
 @app.command()
 def onboard():
     config_path = get_config_path()
@@ -71,6 +74,9 @@ def onboard():
 
     console.print(f"\n{__logo__} mybot is ready!")
 
+#--------------------------------------------------------
+# Agent Mode
+#--------------------------------------------------------
 @app.command()
 def agent():
     chat_id = str(uuid.uuid4())
@@ -165,6 +171,52 @@ def agent():
 
 channels_app = typer.Typer(help="Manage channels")
 app.add_typer(channels_app, name="channels")
+
+@app.command()
+def gateway(
+    port: int | None = typer.Option(None, "--port", "-p", help="Gateway port"),
+    verbose: bool = typer.Option(False, "-verbose", "-v", help="Verbose output")
+):
+    if verbose:
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
+    
+    config = load_config()
+    port = port if port is not None else config.gateway.port
+
+    console.print(f"{__logo__} Starting mybot gateway version {__version__} on port {port}...")
+    
+    bus = MessageBus()
+    provider = _make_provider(config)
+    session_manager=SessionManager(_workspace_path())
+
+    agent = AgentLoop(
+        provider= provider, 
+        workspace=_workspace_path(),
+        bus=bus,
+        session_manager=session_manager,
+        config=config
+    )
+
+    async def run():
+        try:
+            await asyncio.gather(agent.run())
+        except KeyboardInterrupt:
+            console.print("\nShutting down...")
+        except Exception:
+            import traceback
+            console.print("\n[red]Error: Gateway crashed unexpectedly[/red]")
+            console.print(traceback.format_exc())
+        finally:
+            agent.stop()
+
+    asyncio.run(run())
+
+
+
+#-----------------------------------
+# Channels
+#-----------------------------------
 
 @channels_app.command("login")
 def channel_login(channel_name: str = typer.Argument(..., help="Channel name (e.g. weixin, whatapp)")):
