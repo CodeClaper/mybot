@@ -101,8 +101,22 @@ class WeixinChannel(BaseChannel):
                 logger.error("WeChat poll error ({}/{}): {}", failures, MAX_FAILURES, e)
     
     async def send(self, msg: OutboundMessage) -> None:
-        content = msg.content
-        
+        """
+        Send messsage to weixin channel.
+        Args:
+            msg: message to send.
+        """
+        if not self._client:
+            logger.warning("WeChat client not initialized or not authenticated.")
+            return
+
+        try:
+            self._assert_session_active()
+        except RuntimeError as e:
+            logger.warning("WeChat send blocked: {}", e)
+            return
+
+        content = msg.content.strip()
         if not content:
             return
         try:
@@ -148,6 +162,14 @@ class WeixinChannel(BaseChannel):
         errcode = data.get("errcode", 0)
         if errcode and errcode != 0:
             logger.warning("WeChat send error (code {}): {}", errcode, data.get("errmsg", ""))
+
+    def _assert_session_active(self) -> None:
+        remaining = self._session_pause_remaining_s()
+        if remaining > 0:
+            remaining_min = max((remaining + 59) // 60, 1)
+            raise RuntimeError(
+                f"WeChat session paused, {remaining_min} min remaining."
+            )
 
     #--------------------------------------------------------------------
     # The state manager
@@ -433,11 +455,10 @@ class WeixinChannel(BaseChannel):
             return
 
         logger.info(
-            "WeChat inbound: from={} items={} bodylen={}, content={}",
+            "WeChat inbound: from={} items={} bodylen={}",
             from_user_id,
             ",".join(str(i.get("type", 0)) for i in item_list),
-            len(content),
-            content
+            len(content)
         )
 
         await self._handle_message(
