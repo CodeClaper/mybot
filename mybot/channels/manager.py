@@ -1,5 +1,6 @@
 
 import asyncio
+from logging import log
 from loguru import logger
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
@@ -20,10 +21,11 @@ class ChannelManager:
        self.config = config
        self.bus = bus
        self.channels: dict[str, BaseChannel] = {}
+       self.dispath_task: asyncio.Task | None = None
        self._init_channels()
     
     def _init_channels(self) -> None:
-
+        """Initailize channel."""
         for name, cls in discover_all().items():
             cfg = getattr(self.config.channels, name, None)
             if cfg is None:
@@ -47,7 +49,11 @@ class ChannelManager:
         if not self.channels:
             logger.warning("Not any channel available.")
             return
-
+        
+        # Start outbound dispatcher.
+        self.dispath_task = asyncio.create_task(self._dispatch_outbound())
+        
+        # Start channels.
         tasks = []
         for name, channel in self.channels.items():
             logger.info("Starting {} channel...", name)
@@ -77,4 +83,26 @@ class ChannelManager:
             await channel.start()
         except Exception as e:
             logger.error("Failed to start channel {}: {}", name, e)
+
+
+    async def _dispatch_outbound(self) -> None:
+        """Dispatch outboud message to the appropriate channel."""
+
+        logger.info("Outbound dispatcher started.")
+        
+        while True:
+            try:
+                msg = await asyncio.wait_for(self.bus.consume_outbound(), timeout=1.0)
+                channel = self.channels.get(msg.channel)
+                if channel:
+                    try:
+                        await channel.send(msg)
+                    except Exception as e:
+                        logger.error("Error sending to {}: {}", msg.channel, e)
+                else:
+                    logger.error("Error sending to {}", msg.channel)
+            except asyncio.TimeoutError:
+                continue
+            except asyncio.CancelledError:
+                break
 

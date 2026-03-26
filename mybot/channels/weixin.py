@@ -39,6 +39,8 @@ DEFAULT_LONG_POLL_TIMEOUT_S = 35
 
 MAX_FAILURES = 3
 
+WEIXIN_MAX_MESSAGE_LEN = 4000
+
 class WeixinChannel(BaseChannel):
 
     name="weixin"
@@ -98,7 +100,12 @@ class WeixinChannel(BaseChannel):
                 logger.error("WeChat poll error ({}/{}): {}", failures, MAX_FAILURES, e)
     
     async def send(self, msg: OutboundMessage) -> None:
-        return await super().send(msg)
+        content = msg.content
+        
+        if not content:
+            return
+        try:
+            chunks = 
 
     async def stop(self) -> None:
         self._running = False
