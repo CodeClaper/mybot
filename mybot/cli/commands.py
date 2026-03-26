@@ -18,6 +18,7 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.channels.registry import discover_all
 from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
 from mybot.config.loader import load_config, save_config
 from mybot.config.question import question_config
@@ -84,6 +85,7 @@ def agent():
         config=config
     )
     console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
+
     _init_prompt_session()
 
     def _thinking_mode():
@@ -161,6 +163,30 @@ def agent():
             loop_task.cancel()
     
     asyncio.run(run_interactive())
+
+channels_app = typer.Typer(help="Manage channels")
+app.add_typer(channels_app, name="channels")
+
+@channels_app.command("login")
+def channel_login(channel_name: str = typer.Argument(..., help="Channel name (e.g. weixin, whatapp)")):
+    config = load_config()
+    channel_cfg = getattr(config.channels, channel_name, None)
+    if channel_cfg is None:
+        console.print(f"[red]Unknow channel: {channel_name}[red]")
+        raise typer.Exit(1)
+    
+    enabled = getattr(channel_cfg, "enabled", False)
+    if not enabled:
+        console.print(f"[red]Channel is not enabled: {channel_name}[red], please enable it in config.json")
+        raise typer.Exit(1)
+
+    all_channels = discover_all()
+    channel_class = all_channels[channel_name]
+    channel = channel_class(config, bus=None)
+    
+    if asyncio.run(channel.login()):
+        raise typer.Exit(1)
+        
 
 
 def _init_prompt_session() -> None:

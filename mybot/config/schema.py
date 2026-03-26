@@ -11,7 +11,7 @@ class Base(BaseModel):
 class AgentDefaults(Base):
     """Agent default configuration."""
     model: str = "deepseek/deepseek-chat"
-    provider: str = "auto"  # Provider name (e.g. "anthropic", "openrouter") or "auto" for auto-detection
+    provider: str = "deepseek"  # Provider name (e.g. "anthropic", "openrouter") or "auto" for auto-detection
     max_tokens: int = 8192
     temperature: float = 0.1
     max_tool_iterations: int = 40
