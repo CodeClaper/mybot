@@ -17,6 +17,7 @@ from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.channels.manager import ChannelManager
 from mybot.channels.registry import discover_all
 from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
 from mybot.config.loader import load_config, save_config
@@ -39,7 +40,7 @@ def version_callback(value: bool):
 
 
 @app.callback()
-def main(version: bool = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)):
+def main(version: bool = typer.Option(None, "--version", "-v", help="Current version.", callback=version_callback, is_eager=True)):
     pass
 
 #------------------------------------------
@@ -198,9 +199,11 @@ def gateway(
         config=config
     )
 
+    channels = ChannelManager(config, bus)
+
     async def run():
         try:
-            await asyncio.gather(agent.run())
+            await asyncio.gather(agent.run(), channels.start_all())
         except KeyboardInterrupt:
             console.print("\nShutting down...")
         except Exception:
@@ -209,6 +212,7 @@ def gateway(
             console.print(traceback.format_exc())
         finally:
             agent.stop()
+            await channels.stop_all()
 
     asyncio.run(run())
 

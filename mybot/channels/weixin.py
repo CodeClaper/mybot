@@ -393,10 +393,11 @@ class WeixinChannel(BaseChannel):
             return
 
         logger.info(
-            "WeChat inbound: from={} items={} bodylen={}",
+            "WeChat inbound: from={} items={} bodylen={}, content={}",
             from_user_id,
             ",".join(str(i.get("type", 0)) for i in item_list),
-            len(content)
+            len(content),
+            content
         )
 
         await self._handle_message(

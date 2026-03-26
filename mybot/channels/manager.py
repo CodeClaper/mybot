@@ -29,7 +29,7 @@ class ChannelManager:
             if cfg is None:
                 continue
 
-            enabled = cfg.get("enabled", False)
+            enabled = cfg.get("enabled", False) if isinstance(cfg, dict) else getattr(cfg, "enabled", False)
             if not enabled:
                 continue
 
