@@ -30,6 +30,15 @@ class BaseChannel(ABC):
         self._bus = bus
         self._running = False
 
+
+    @abstractmethod
+    async def login(self) -> bool:
+        """
+        Perform channel-special interactive login (e.g. QR code scan).
+
+        """
+        return True;
+
     @abstractmethod
     async def start(self) -> None:
         """
