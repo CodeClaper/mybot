@@ -31,12 +31,55 @@ class Session:
 
     def get_history(self, max_message: int = 1000) -> list[dict[str, Any]]:
         """Get session history messages."""
-        return self.messages[-max_message:]
+        sliced = self.messages[-max_message:]
+        
+        # Drop leading non-user messages to avoid start mid-turn when possible.
+        for i, message in enumerate(sliced):
+            if (message.get("role")) == "user":
+                sliced = sliced[i:]
+                break
+        
+        start = self._find_legal_start(sliced)
+        if start:
+            sliced = sliced[start:]
+        
+        out: list[dict[str, Any]] = []
+        for message in sliced:
+            entry: dict[str, Any] = {"role": message["role"], "content": message.get("content", "")}
+            for key in ("tool_calls", "tool_call_id", "name"):
+                if key in message:
+                    entry[key] = message[key]
+            out.append(entry)
+        return out
+
 
     def clear(self) -> None:
         """Clear all messages and reset the session to initial state."""
         self.messages = []
         self.updated_at = datetime.now()
+
+
+    def _find_legal_start(self, messages: list[dict[str, Any]]) -> int:
+        """Find the first index where every tool result has a matching assistant tool_call."""
+        start = 0
+        declared: set[str] = set()
+        for i, msg in enumerate(messages):
+            role = msg.get("role")
+            if role == "assistant":
+                for tc in msg.get("tool_calls") or []:
+                    if isinstance(tc, dict) and tc.get("id"):
+                        declared.add(str(tc["id"]))
+            elif role == "tool":
+                tid = msg.get("tool_call_id")
+                if tid and str(tid) not in declared:
+                    start = i + 1
+                    declared.clear()
+                    for prev in messages[start: i + 1]:
+                        if prev.get("role") == "assistant":
+                            for tc in prev.get("tool_calls") or []:
+                                if isinstance(tc, dict) and tc.get("id"):
+                                    declared.add(str(tc["id"]))
+        return start
 
 
 class SessionManager:
