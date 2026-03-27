@@ -8,8 +8,8 @@ from loguru import logger
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.schema import Config
-from mybot.memory.context import ContextBuilder
-from mybot.memory.session import Session, SessionManager
+from mybot.context.context import ContextBuilder
+from mybot.context.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.tools.shell import ShellTool
 from mybot.tools.message import MessageTool

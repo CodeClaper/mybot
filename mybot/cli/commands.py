@@ -23,7 +23,7 @@ from mybot.config.path import get_config_path, get_history_path, get_worksapce_p
 from mybot.config.loader import load_config, save_config
 from mybot.config.question import question_config
 from mybot.config.schema import Config
-from mybot.memory.session import SessionManager
+from mybot.context.session import SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.providers.default_provider import DefaultProvider
 from mybot.providers.local_provider import LocalProvider
