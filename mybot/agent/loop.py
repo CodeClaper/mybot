@@ -2,14 +2,12 @@ import asyncio
 import json
 
 from pathlib import Path
-from re import search
 from typing import Any, Awaitable, Callable
 from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.schema import Config
-from mybot.memory import context
 from mybot.memory.context import ContextBuilder
 from mybot.memory.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
@@ -19,6 +17,17 @@ from mybot.tools.registry import TooRegistry
 from mybot.tools.web import WebFetchTool, WebSearchTool
 
 class AgentLoop:
+    """
+    The Agent Loop is the core processing engine.
+
+    Responsibilities:
+    1. Receive messages from the bus.
+    2. Build context with history, memory, tools, skills.
+    3. Calls the LLM.
+    4. Execute tool calls.
+    5. Send response back.
+    """
+
     def __init__(
         self, 
         workspace: Path,
@@ -71,12 +80,12 @@ class AgentLoop:
         except asyncio.CancelledError:
             logger.info("Task cancelled.") 
             raise
-        except Exception:
+        except Exception as e:
             logger.exception("Error processing message.")
             await self.bus.publish_outbound(OutboundMessage(
                 channel=msg.channel, 
                 chat_id=msg.chat_id,
-                content="Sorry, I encountered an error."
+                content=f"Sorry, I encountered an error: {e}."
             ))
 
     async def _process_message(self, msg: InboundMessage) -> OutboundMessage | None:
@@ -98,7 +107,7 @@ class AgentLoop:
                                    content="System commands:/new - Start a new session/exit - Exit current task/help - Show available commands")
 
         history = session.get_history(100)
-        initial_messages = self.context.build_messages(msg, history)
+        initial_messages = self.context.build_messages(msg=msg, history=history)
 
         async def _bus_process(content: str, tool_hint: bool = False) -> None:
             meta = dict(msg.metadata or {})
