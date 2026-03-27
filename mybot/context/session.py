@@ -29,7 +29,7 @@ class Session:
         self.messages.append(msg)
         self.updated_at = datetime.now()
 
-    def get_history(self, max_message: int = 1000) -> list[dict[str, Any]]:
+    def get_history(self, max_message: int = 500) -> list[dict[str, Any]]:
         """Get session history messages."""
         sliced = self.messages[-max_message:]
         
@@ -39,6 +39,8 @@ class Session:
                 sliced = sliced[i:]
                 break
         
+        # Some providers reject orphan tool results if the matching assistant
+        # tool_calls message fell outside the fixed-size history window.
         start = self._find_legal_start(sliced)
         if start:
             sliced = sliced[start:]
