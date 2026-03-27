@@ -170,9 +170,6 @@ def agent():
     
     asyncio.run(run_interactive())
 
-channels_app = typer.Typer(help="Manage channels")
-app.add_typer(channels_app, name="channels")
-
 @app.command()
 def gateway(
     port: int | None = typer.Option(None, "--port", "-p", help="Gateway port"),
@@ -221,9 +218,14 @@ def gateway(
 #-----------------------------------
 # Channels
 #-----------------------------------
+channels_app = typer.Typer(help="Manage channels")
+app.add_typer(channels_app, name="channels")
 
 @channels_app.command("login")
-def channel_login(channel_name: str = typer.Argument(..., help="Channel name (e.g. weixin, whatapp)")):
+def channel_login(
+    channel_name: str = typer.Argument(..., help="Channel name (e.g. weixin, whatapp)"),
+    force: bool = typer.Option(False, "--force", "-f", help="Force re-authentication even if already logged in.")
+):
     config = load_config()
     channel_cfg = getattr(config.channels, channel_name, None)
     if channel_cfg is None:
@@ -239,7 +241,7 @@ def channel_login(channel_name: str = typer.Argument(..., help="Channel name (e.
     channel_class = all_channels[channel_name]
     channel = channel_class(config, bus=MessageBus())
       
-    success = asyncio.run(channel.login())
+    success = asyncio.run(channel.login(force=force))
     if not success:
         raise typer.Exit(1)
 

@@ -63,8 +63,16 @@ class WeixinChannel(BaseChannel):
     #--------------------------------------------------------------------------
     # Basic implement method for BaseChannel.
     #--------------------------------------------------------------------------
-    async def login(self) -> bool:
+    async def login(self, force: bool = False) -> bool:
         """QR code login and save token."""
+
+        if force:
+            self._token = ""
+            self._get_updates_buf = ""
+            state_file = self._get_account_file()
+            if state_file.exists():
+                state_file.unlink()
+
         if self._token or self._load_state():
             return True
 

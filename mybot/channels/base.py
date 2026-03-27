@@ -32,10 +32,15 @@ class BaseChannel(ABC):
 
 
     @abstractmethod
-    async def login(self) -> bool:
+    async def login(self, force: bool = False) -> bool:
         """
         Perform channel-special interactive login (e.g. QR code scan).
 
+        Args:
+            force: If true, ignore the existing credentials and forece re-authenticate.
+
+        Returns:
+            Return True if already authenticated or login successed.
         """
         return True;
 
