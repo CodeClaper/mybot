@@ -80,7 +80,6 @@ def onboard():
 #--------------------------------------------------------
 @app.command()
 def agent():
-    chat_id = str(uuid.uuid4())
     bus = MessageBus()
     config = load_config()
     agent = AgentLoop(
@@ -149,7 +148,7 @@ def agent():
                     await bus.publish_inbound(InboundMessage(
                         channel="cli",
                         sender_id="user",
-                        chat_id = chat_id,
+                        chat_id = "agent",
                         content=user_input
                     ))
 
