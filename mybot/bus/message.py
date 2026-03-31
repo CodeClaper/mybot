@@ -16,6 +16,11 @@ class InboundMessage:
     metadata: dict[str, Any] = field(default_factory=dict)
     session_key_override: str | None = None
 
+    @property
+    def session_key(self) -> str:
+        """Unique key for session identitfication."""
+        return self.session_key_override or f"{self.channel}:{self.chat_id}"
+
 
 @dataclass
 class OutboundMessage:

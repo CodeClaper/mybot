@@ -40,7 +40,8 @@ class AgentLoop:
         self.max_iterations = 100
         self.provider = provider
         self.bus = bus
-        self.session_manager = session_manager
+        self.workspace = workspace
+        self.session_manager = session_manager or SessionManager(self.workspace)
         self.config = config
         self.context = ContextBuilder(workspace)
         self.tool_registry = TooRegistry()
@@ -90,7 +91,8 @@ class AgentLoop:
 
     async def _process_message(self, msg: InboundMessage) -> OutboundMessage | None:
         """Process a single inbound message and return the response."""
-        session = self.session_manager.get_or_create(msg.chat_id)
+        session_key = msg.session_key
+        session = self.session_manager.get_or_create(session_key)
         cmd = msg.content.strip().lower()
         
         ## For system command.
