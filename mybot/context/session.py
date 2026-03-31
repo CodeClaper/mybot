@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+import uuid
 from loguru import logger
 
 from mybot.config.path import ensure_dir
@@ -159,6 +160,12 @@ class SessionManager:
                 f.write(json.dumps(msg, ensure_ascii=False) + "\n")
 
         self._cache[session.key] = session
+
+    def archive(self, session: Session) -> None:
+        """archive a session. """
+        path = self._get_session_path(session.key)
+        path.rename(path.with_name(f"{uuid.uuid4()}.jsonl"))
+        
 
     def invalidate(self, key: str) -> None:
         """Remove a session from the in-memory cache."""

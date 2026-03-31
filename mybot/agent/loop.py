@@ -98,7 +98,7 @@ class AgentLoop:
         ## For system command.
         if cmd == '/new':
             session.clear()
-            self.session_manager.save(session)
+            self.session_manager.archive(session)
             self.session_manager.invalidate(session.key)
             return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content="New session started")
         elif cmd == '/history':
