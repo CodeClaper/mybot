@@ -1,5 +1,7 @@
 import os
 import sys
+from typing import Any
+from rich import markdown
 import typer
 import signal
 import asyncio
@@ -79,7 +81,9 @@ def onboard():
 # Agent Mode
 #--------------------------------------------------------
 @app.command()
-def agent():
+def agent(
+    markdown: bool = typer.Option(True, "--markdown/--no-markdown", help="Render assistant output as Markdown"),
+):
     bus = MessageBus()
     config = load_config()
     agent = AgentLoop(
@@ -107,7 +111,7 @@ def agent():
         loop_task = asyncio.create_task(agent.run())
         turn_done = asyncio.Event()
         turn_done.set()
-        turn_response: list[str] = []
+        turn_response: list[tuple[str, dict]] = []
 
         async def _consume_outbound():
             while True:
@@ -120,11 +124,11 @@ def agent():
                         pass
                     elif not turn_done.is_set():
                         if msg.content:
-                            turn_response.append(msg.content)
+                            turn_response.append((msg.content, dict(msg.metadata or {})))
                         turn_done.set()
                     elif msg.content:
                         console.print()
-                        _print_agent_response(turn_response[0], render_markdown=True)
+                        _print_agent_response(response=msg.content, render_markdown=markdown, metadata= msg.metadata)
                 except asyncio.TimeoutError:
                     continue
                 except asyncio.CancelledError:
@@ -156,7 +160,8 @@ def agent():
                         await turn_done.wait()
 
                     if turn_response:
-                        _print_agent_response(turn_response[0], render_markdown=True)
+                        content, metadata = turn_response[0]
+                        _print_agent_response(content, render_markdown=markdown, metadata=metadata)
                 except KeyboardInterrupt:
                     console.print("\nGoodbye!")
                     break
@@ -270,11 +275,26 @@ async def _read_interactive_input_async() -> str:
 def _is_exit_command(command: str) -> bool:
     return command.lower() in ["/exit", "/quit", ":q"]
 
+def _reponse_renderable(
+    content: str, 
+    render_markdown: bool, 
+    metadata: dict | None
+) -> Any:
+    """Render plain-text command output without markdown collapising newlines."""
+    if not render_markdown:
+        return Text(content)
+    if (metadata or {}).get("render_as") == "text":
+        return Text(content)
+    return Markdown(content)
 
-def _print_agent_response(response: str, render_markdown: bool) -> None:
+def _print_agent_response(
+    response: str, 
+    render_markdown: bool,
+    metadata: dict | None = None
+) -> None:
     """Render assistant response with consistent terminal styling. """
     content = response or ''
-    body = Markdown(content) if render_markdown else Text(content)
+    body = _reponse_renderable(content=content, render_markdown=render_markdown, metadata=metadata)
     console.print()
     console.print(f"[cyan]{__logo__} mybot[/cyan]")
     console.print(body)

@@ -31,10 +31,10 @@ async def cmd_help(ctx: CommandContext) -> OutboundMessage:
     """Show all available commands."""
 
     lines = [
-            f"{__logo__} mybot comnmands:",
+            f"System comnmands:",
             "/new       - Start a new session.",
-            "/history   - Show history records of current session."
-            "/help      - Show available commands."
+            "/history   - Show history records of current session.",
+            "/help      - Show available commands.",
             "/status    - Show bot status."
     ]
     
