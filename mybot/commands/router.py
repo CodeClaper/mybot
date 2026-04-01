@@ -6,7 +6,6 @@ from mybot.context.session import Session
 @dataclass()
 class CommandContext:
     """Everything a command handler needs to produce a response."""
-
     msg: InboundMessage
     session: Session | None
     key: str
@@ -43,3 +42,8 @@ class CommandRouter:
 
     def exact(self, cmd: str, handler: Handler) -> None:
         self._exact[cmd] = handler
+    
+    
+    async def dispatch(self, ctx: CommandContext) -> OutboundMessage | None:
+        """Try extract, prefix, then interceptors. Return None if unhandled."""
+
