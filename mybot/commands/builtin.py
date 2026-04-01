@@ -21,7 +21,7 @@ async def cmd_history(ctx: CommandContext) -> OutboundMessage:
     loop = ctx.loop
     msg = ctx.msg
     session = ctx.session or loop.session_manager.get_or_create(ctx.key)
-    history = session.get_history(100)
+    history = session.get_sessions(0)
     return OutboundMessage(
         channel=msg.channel, chat_id=msg.chat_id, 
         content=json.dumps(history, ensure_ascii=False, indent=4)
