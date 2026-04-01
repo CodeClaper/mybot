@@ -7,6 +7,8 @@ from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
+from mybot.commands.builtin import register_builtin_commands
+from mybot.commands.router import CommandContext, CommandRouter
 from mybot.config.schema import Config
 from mybot.context.context import ContextBuilder
 from mybot.context.session import Session, SessionManager
@@ -46,6 +48,8 @@ class AgentLoop:
         self.context = ContextBuilder(workspace)
         self.tool_registry = TooRegistry()
         self._register_defaul_tools()
+        self.commands = CommandRouter()
+        register_builtin_commands(self.commands)
 
     async def run(self) -> None:
         """Agent loop run."""
@@ -93,20 +97,12 @@ class AgentLoop:
         """Process a single inbound message and return the response."""
         session_key = msg.session_key
         session = self.session_manager.get_or_create(session_key)
-        cmd = msg.content.strip().lower()
         
         ## For system command.
-        if cmd == '/new':
-            session.clear()
-            self.session_manager.archive(session)
-            self.session_manager.invalidate(session.key)
-            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content="New session started")
-        elif cmd == '/history':
-            history = session.get_history(100)
-            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, content=json.dumps(history, ensure_ascii=False, indent=4))
-        elif cmd == '/help':
-            return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id, 
-                                   content="System commands:/new - Start a new session/exit - Exit current task/help - Show available commands")
+        raw = msg.content.strip().lower()
+        cxt = CommandContext(msg=msg, session=session, key=session_key, raw=raw, loop=self)
+        if result := await self.commands.dispatch(ctx=cxt):
+            return result
 
         history = session.get_history(100)
         initial_messages = self.context.build_messages(msg=msg, history=history)

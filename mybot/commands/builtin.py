@@ -1,6 +1,6 @@
 import json
 from mybot.bus.message import OutboundMessage
-from mybot.commands.router import CommandContext
+from mybot.commands.router import CommandContext, CommandRouter
 from mybot import __logo__
 
 async def cmd_new(ctx: CommandContext) -> OutboundMessage:
@@ -45,3 +45,9 @@ async def cmd_help(ctx: CommandContext) -> OutboundMessage:
         metadata={"render_as": "text"}
     )
 
+def register_builtin_commands(router: CommandRouter) -> None:
+    """Register builtin commands into router."""
+
+    router.exact("/new", cmd_new)
+    router.exact("/history", cmd_history)
+    router.exact("/help", cmd_help)

@@ -46,4 +46,21 @@ class CommandRouter:
     
     async def dispatch(self, ctx: CommandContext) -> OutboundMessage | None:
         """Try extract, prefix, then interceptors. Return None if unhandled."""
+        
+        cmd = ctx.raw.lower()
+        
+        if handler := self._exact.get(cmd):
+            return await handler(ctx)
+
+        for pfx, handler in self._prefix:
+            if cmd.startswith(pfx):
+                ctx.args = ctx.raw[len(pfx):]
+                return await handler(ctx)
+
+        for interceptor in self._interceptors:
+            result = await interceptor(ctx)
+            if result is not None:
+                return result
+
+        return None
 
