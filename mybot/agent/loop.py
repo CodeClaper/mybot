@@ -17,6 +17,7 @@ from mybot.tools.shell import ShellTool
 from mybot.tools.message import MessageTool
 from mybot.tools.registry import TooRegistry
 from mybot.tools.web import WebFetchTool, WebSearchTool
+from mybot.utils.helper import strip_think
 
 class AgentLoop:
     """
@@ -161,18 +162,31 @@ class AgentLoop:
                 ]
 
                 messages = self._add_assistant_message(
-                        messages, response.content, tool_call_dicts,
-                        reasoning_content=response.reasoning_content,
-                        thinking_blocks=response.thinking_blocks
+                    messages, response.content, tool_call_dicts,
+                    reasoning_content=response.reasoning_content,
+                    thinking_blocks=response.thinking_blocks
                 )
                 for tool_call in response.tool_calls:
                     result = await self.tool_registry.execute(tool_call.name, tool_call.arguments)
                     messages = self._add_tool_result(messages, tool_call.id, tool_call.name, result)
             else:
+                clean = self._strip_think(response.content)
+                if response.finish_reason == "error":
+                    logger.error("LLM return error: {}", clean)
+                    final_content = "Sorry, I encountered an error calling the AI model."
+                    break
+                messages = self._add_assistant_message(
+                    messages=messages, content=clean,
+                    thinking_blocks=response.thinking_blocks
+                )
                 final_content = response.content
                 break
-        if iteration >= self.max_iterations:
-            final_content = (f"I reached the maximum number of tool call iterations ({self.max_iterations}) ")
+        if final_content is None and iteration >= self.max_iterations:
+            logger.warning("Max iteration ({}) reached.", self.max_iterations)
+            final_content = (
+                f"I reached the maximum number of tool call iterations ({self.max_iterations}) "
+                "without completing the task. You can try break the task into smaller steps."
+            )
 
         return final_content, messages
 
@@ -233,4 +247,8 @@ class AgentLoop:
             return f"{tc.name}(\"{val[:40]}\")" if len(val) > 40  else f"{tc.name}(\"{val}\")"
         return ", ".join(_fmt(tc) for tc in tool_calls)
 
-
+    def _strip_think(self, text: str | None) -> str | None:
+        """Remove <think>...</think> blocks."""
+        if not text:
+            return None
+        return strip_think(text) or None

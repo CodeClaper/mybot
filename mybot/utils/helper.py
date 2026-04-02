@@ -1,5 +1,7 @@
 """Utility functions."""
 
+import re
+
 def split_message(content: str, max_len: int = 2000) -> list[str]:
     """
     Split content into chunks within max_len.
@@ -32,3 +34,9 @@ def split_message(content: str, max_len: int = 2000) -> list[str]:
         content = content[pos:].lstrip()
 
     return chunks
+
+def strip_think(text: str) -> str:
+    """Remoive <think></think> blocks."""
+    text = re.sub(r"<think>[\s\S]*?</think>", "", text)
+    text = re.sub(r"<think>[\s\S]*$", "", text)
+    return text.strip()
