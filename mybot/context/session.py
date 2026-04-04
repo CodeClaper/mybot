@@ -55,17 +55,17 @@ class Session:
             out.append(entry)
         return out
 
-    def get_sessions(self, max_message: int = 500) -> list[dict[str, Any]]:
-        """Get session history messages."""
+    def get_conversations(self, max_message: int = 500) -> list[dict[str, Any]]:
+        """Get conversations of current session."""
         sliced = self.messages[-max_message:]
 
         out: list[dict[str, Any]] = []
-        
-        # Drop leading non-user messages to avoid start mid-turn when possible.
         for message in sliced:
-            if (message.get("role")) == "user" or (message.get("role")) == "assistant":
-                out.append({"role": message.get("role", ""), "message": message.get("content", "")})
-        
+            if (message.get("role")) == "user":
+                out.append({"role": "user", "content": message.get("content", "")})
+            if (message.get("role")) == "assistant":
+                out.append({"role": "assistant", "content": message.get("content", "")})
+
         return out
 
 

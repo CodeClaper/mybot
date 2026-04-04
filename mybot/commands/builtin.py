@@ -1,7 +1,6 @@
-import json
 from mybot.bus.message import OutboundMessage
 from mybot.commands.router import CommandContext, CommandRouter
-from mybot import __logo__
+from mybot import __name__
 
 async def cmd_new(ctx: CommandContext) -> OutboundMessage:
     """Start a new session"""
@@ -21,10 +20,18 @@ async def cmd_history(ctx: CommandContext) -> OutboundMessage:
     loop = ctx.loop
     msg = ctx.msg
     session = ctx.session or loop.session_manager.get_or_create(ctx.key)
-    history = session.get_sessions(0)
+    conversations = session.get_conversations(0)
+
+    lines: list[str] = []
+    for conv in conversations:
+        if conv.get("role") == "user":
+            lines.append(f"- **you**: \t{conv.get('content', '')}")
+        elif conv.get("role") == "assistant":
+            lines.append(f"- **{__name__}**: \t{conv.get('content', '')}")
+
     return OutboundMessage(
         channel=msg.channel, chat_id=msg.chat_id, 
-        content=json.dumps(history, ensure_ascii=False, indent=4)
+        content="\r\n ".join(lines)
     )
 
 async def cmd_help(ctx: CommandContext) -> OutboundMessage:
