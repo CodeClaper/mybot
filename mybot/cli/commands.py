@@ -1,11 +1,9 @@
 import os
 import sys
 from typing import Any
-from rich import markdown
 import typer
 import signal
 import asyncio
-import uuid
 
 from pathlib import Path
 from rich.text import Text
