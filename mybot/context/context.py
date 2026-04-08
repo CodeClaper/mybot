@@ -2,12 +2,14 @@ import platform
 from pathlib import Path
 from typing import Any
 from mybot import __logo__
+from mybot.agent.skill import SkillLoader
 from mybot.bus.message import InboundMessage 
 
 class ContextBuilder:
 
     def __init__(self, workspace: Path) -> None:
         self.workspace = workspace
+        self.skills = SkillLoader(workspace)
     
 
     def build_messages(
@@ -27,7 +29,19 @@ class ContextBuilder:
 
 
     def _build_system_promp(self, skills_name: list[str] | None = None) -> str:
+        """Build the system prompt from identity, skills."""
         parts = [self._get_identity()]
+
+        always_skills = self.skills.get_always_skills()
+        if always_skills:
+            always_content = self.skills.load_skills_for_context(always_skills)
+            if always_content:
+                parts.append(f"# Active Skills\n\n{always_content}")
+
+        skills_summary = self.skills.build_skills_summary()
+        if skills_summary:
+            parts.append(self._get_skills_summary(skills_summary))
+
         return "\n\n---\n\n".join(parts)
 
 
@@ -76,3 +90,11 @@ Your workspace is at: {workspace_path}
 
 Reply directly with text for conversations. Only use the 'message' tool to send to a specific chat channel.
 IMPORTANT: To send files (images, documents, audio, video) to the user, you MUST call the 'message' tool with the 'media' parameter. Do NOT use read_file to "send" a file — reading a file only shows its content to you, it does NOT deliver the file to the user. Example: message(content="Here is the file", media=["/path/to/file.png"])"""
+
+    def _get_skills_summary(self, skills_summary) -> str:
+        return f"""# Skills
+The following skills extend your capabilities. To use a skill, read its SKILL.md file using the read_file tool.
+Skills with available="false" need dependencies installed first - you can try installing them with apt/brew.
+
+{ skills_summary }
+"""
