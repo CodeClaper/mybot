@@ -39,7 +39,8 @@ class DeepSeekProvider(BaseProvider):
             "messages": messages,
             "max_tokens": max_tokens,
             "temperature": temperature,
-            "extra_body":{ "thinking": { "type": "disabled" } },
+            "reasoning_effort": "high",
+            "extra_body":{ "thinking": { "type": "enabled" } },
         }
 
         if tools:
