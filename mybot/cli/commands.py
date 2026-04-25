@@ -91,7 +91,9 @@ def agent(
         session_manager=SessionManager(_workspace_path()),
         config=config
     )
-    console.print(f"Welocom to {__logo__} mybot agent. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
+
+    model = config.agents.defaults.model
+    console.print(f"Welocom to {__logo__}  mybot agent using [green]({model})[/green]. (type [bold]/exit[/bold]) or [bold]Ctrl+C[/bold] to quite")
 
     _init_prompt_session()
 
