@@ -27,6 +27,7 @@ from mybot.context.session import SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.providers.default_provider import DefaultProvider
 from mybot.providers.local_provider import LocalProvider
+from mybot.providers.deepseek_provider import DeepSeekProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
 console = Console()
@@ -303,11 +304,17 @@ def _print_agent_response(
 
 def _make_provider(config: Config) -> BaseProvider:
     """Create the appropriate LLM provider by config. """
-    
+
     model = config.agents.defaults.model
     provider = config.get_provider(model)
+    provider_name = config.get_provider_name(model)
     if model == "local":
         return LocalProvider()
+    elif provider_name == "deepseek":
+        return DeepSeekProvider(
+            api_key=provider.api_key if provider else None,
+            api_base=provider.api_base if provider else None,
+        )
     else:
         return DefaultProvider(
             default_model=model,
