@@ -177,7 +177,8 @@ class AgentLoop:
                     break
                 messages = self._add_assistant_message(
                     messages=messages, content=clean,
-                    thinking_blocks=response.thinking_blocks
+                    reasoning_content=response.reasoning_content,
+                    thinking_blocks=response.thinking_blocks,
                 )
                 final_content = response.content
                 break
