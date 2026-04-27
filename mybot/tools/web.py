@@ -1,16 +1,29 @@
+import html
 import json
 import re
-import httpx
-import html
-
-from loguru import logger
 from typing import Any
-from readability import Document
 from urllib.parse import urlparse
+
+import httpx
+from curl_cffi.requests import AsyncSession as CurlSession
+from loguru import logger
+from readability import Document
+
 from mybot.tools.base import Tool
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 MAX_REDIRECTS = 5  # Limit redirects to prevent DoS attacks
+
+BROWSER_HEADERS = {
+    "User-Agent": USER_AGENT,
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+    "Cache-Control": "no-cache",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
 
 def _validate_url(url: str) -> tuple[bool, str]:
     """Validate URL."""
@@ -49,7 +62,7 @@ class WebSearchTool(Tool):
             "required": ["query"]
         }
 
-    
+
     async def execute(self, query: str, count: int | None = None, **kwargs: Any) -> str:
         if not self.api_key:
             return "Error: Api key not configure."
@@ -63,7 +76,7 @@ class WebSearchTool(Tool):
                     timeout=10.0
                 )
                 r.raise_for_status()
-            
+
             results = r.json().get("organic_results", [])[:n]
             if not results:
                 return f"No results for: {query}"
@@ -78,7 +91,7 @@ class WebSearchTool(Tool):
             return f"Web search proxy error: {e}"
         except Exception as e:
             return f"Web search error: {e}"
-    
+
 
 class WebFetchTool(Tool):
     """Fetch given url."""
@@ -113,17 +126,18 @@ class WebFetchTool(Tool):
             return json.dumps({"error": f"URL validation failed: {error_msg}", "url": url}, ensure_ascii=False)
 
         try:
-            async with httpx.AsyncClient(
-                    follow_redirects=True,
-                    max_redirects=MAX_REDIRECTS,
-                    proxy=self.proxy, 
-                    timeout=30.0
+            proxy = {"http": self.proxy, "https": self.proxy} if self.proxy else None
+            async with CurlSession(
+                impersonate="chrome120",
+                timeout=30,
+                proxy=proxy,
+                max_redirects=MAX_REDIRECTS,
             ) as client:
-                r = await client.get(url, headers={"User-Agent": USER_AGENT})
+                r = await client.get(url, headers=BROWSER_HEADERS)
                 r.raise_for_status()
 
             ctype = r.headers.get("content-type", "")
-            
+
             if "application/json" in ctype:
                 text, extractor = json.dumps(r.json(), indent=2, ensure_ascii=False), "json"
             elif "text/html" in ctype or r.text[:256].lower().startswith(("<!doctype", "<htlm")):
@@ -133,20 +147,17 @@ class WebFetchTool(Tool):
                 extractor = "readability"
             else:
                 text, extractor = r.text, "raw"
-            
+
             truncated = len(text) > self.max_chars
             if truncated: text = text[:self.max_chars]
 
             return json.dumps({"url": url, "finalUrl": str(r.url), "status": r.status_code,
                                "extractor": extractor, "truncated": truncated, "length": len(text), "text": text})
-        except httpx.ProtocolError as e:
-            logger.error("Web fetch proxy protocol error for {}: {}", url, e)
-            return json.dumps({"error": f"proxy error: {e}", "url": url}, ensure_ascii=False)
         except Exception as e:
             logger.error("Web fetch error for {}: {}", url, e)
             return json.dumps({"error": str(e), "url": url}, ensure_ascii=False)
-        
-    
+
+
     def _to_markdown(self, html: str) -> str:
         """Convert HTML to markdown."""
         # Convert links, headings, lists before stripping tags
