@@ -49,7 +49,7 @@ class Session:
         out: list[dict[str, Any]] = []
         for message in sliced:
             entry: dict[str, Any] = {"role": message["role"], "content": message.get("content", "")}
-            for key in ("tool_calls", "tool_call_id", "name"):
+            for key in ("reasoning_content", "tool_calls", "tool_call_id", "name"):
                 if key in message:
                     entry[key] = message[key]
             out.append(entry)
