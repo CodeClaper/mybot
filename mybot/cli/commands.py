@@ -1,33 +1,34 @@
-import os
-import sys
-from typing import Any
-import typer
-import signal
 import asyncio
-
+import os
+import signal
+import sys
 from pathlib import Path
-from rich.text import Text
+from typing import Any
+
+import typer
+from prompt_toolkit import PromptSession
+from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.patch_stdout import patch_stdout
 from rich.console import Console
 from rich.markdown import Markdown
-from prompt_toolkit import PromptSession
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.formatted_text import HTML
-from prompt_toolkit.patch_stdout import patch_stdout
+from rich.text import Text
+
 from mybot import __logo__, __version__
 from mybot.agent.loop import AgentLoop
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.channels.manager import ChannelManager
 from mybot.channels.registry import discover_all
-from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
 from mybot.config.loader import load_config, save_config
+from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
 from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.context.session import SessionManager
 from mybot.providers.base import BaseProvider
+from mybot.providers.deepseek_provider import DeepSeekProvider
 from mybot.providers.default_provider import DefaultProvider
 from mybot.providers.local_provider import LocalProvider
-from mybot.providers.deepseek_provider import DeepSeekProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
 console = Console()

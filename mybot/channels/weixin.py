@@ -1,16 +1,17 @@
-from logging import error
-import uuid
 import asyncio
-import time
-import json
 import base64
+import json
 import os
+import time
+import uuid
+from logging import error
+from pathlib import Path
 from typing import Any, OrderedDict
+
 import httpx
 import qrcode
-
-from pathlib import Path
 from loguru import logger
+
 from mybot.bus.message import OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel

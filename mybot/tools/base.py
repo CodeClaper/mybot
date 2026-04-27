@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class Tool(ABC):
     """
     Abstract base class for agent tools.

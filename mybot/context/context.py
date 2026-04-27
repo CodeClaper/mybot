@@ -1,9 +1,11 @@
 import platform
 from pathlib import Path
 from typing import Any
+
 from mybot import __logo__
 from mybot.agent.skill import SkillLoader
-from mybot.bus.message import InboundMessage 
+from mybot.bus.message import InboundMessage
+
 
 class ContextBuilder:
 

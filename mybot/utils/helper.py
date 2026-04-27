@@ -2,6 +2,7 @@
 
 import re
 
+
 def split_message(content: str, max_len: int = 2000) -> list[str]:
     """
     Split content into chunks within max_len.

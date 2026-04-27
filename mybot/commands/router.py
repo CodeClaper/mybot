@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable
+
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.context.session import Session
+
 
 @dataclass()
 class CommandContext:

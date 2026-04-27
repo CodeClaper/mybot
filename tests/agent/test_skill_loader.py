@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+
 from mybot.agent.skill import SkillLoader
 
 _SKILL_FONTMATTER = re.compile(r"<skills>\n(.*?)\n</skills>")

@@ -1,8 +1,9 @@
 
-import pkgutil
 import importlib
+import pkgutil
 
 from loguru import logger
+
 from mybot.channels.base import BaseChannel
 
 _INTERNAL = frozenset({"base", "manager", "registry"})

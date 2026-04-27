@@ -1,8 +1,8 @@
 import asyncio
 import json
-
 from pathlib import Path
 from typing import Any, Awaitable, Callable
+
 from loguru import logger
 
 from mybot.bus.message import InboundMessage, OutboundMessage
@@ -13,11 +13,12 @@ from mybot.config.schema import Config
 from mybot.context.context import ContextBuilder
 from mybot.context.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
-from mybot.tools.shell import ShellTool
 from mybot.tools.message import MessageTool
 from mybot.tools.registry import TooRegistry
+from mybot.tools.shell import ShellTool
 from mybot.tools.web import WebFetchTool, WebSearchTool
 from mybot.utils.helper import strip_think
+
 
 class AgentLoop:
     """

@@ -1,7 +1,9 @@
 
 from typing import Any, Awaitable, Callable
+
 from mybot.bus.message import OutboundMessage
 from mybot.tools.base import Tool
+
 
 class MessageTool(Tool):
     """Tool to send messages to users on chat channels."""

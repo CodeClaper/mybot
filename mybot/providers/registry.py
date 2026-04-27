@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass()
 class ProviderSpec:
     """LLM provider's metadata. """

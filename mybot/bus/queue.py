@@ -2,6 +2,7 @@ import asyncio
 
 from mybot.bus.message import InboundMessage, OutboundMessage
 
+
 class MessageBus:
     """
     Async message bus that decouples chat channels from the agent.

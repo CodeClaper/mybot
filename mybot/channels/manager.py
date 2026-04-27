@@ -1,11 +1,14 @@
 
 import asyncio
 from logging import log
+
 from loguru import logger
+
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
 from mybot.channels.registry import discover_all
 from mybot.config.schema import Config
+
 
 class ChannelManager:
     """

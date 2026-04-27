@@ -1,8 +1,8 @@
 import json
-from pathlib import Path
-from mybot.config.path import get_config_path
 
+from mybot.config.path import get_config_path
 from mybot.config.schema import Config
+
 
 def load_config() -> Config:
     """

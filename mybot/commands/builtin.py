@@ -1,6 +1,7 @@
+from mybot import __name__
 from mybot.bus.message import OutboundMessage
 from mybot.commands.router import CommandContext, CommandRouter
-from mybot import __name__
+
 
 async def cmd_new(ctx: CommandContext) -> OutboundMessage:
     """Start a new session"""
