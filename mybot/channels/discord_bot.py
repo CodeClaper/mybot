@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext.commands import bot
+from mybot.bus.message import OutboundMessage
 from mybot.channels.discord import DiscordChannel
 from loguru import logger
 
@@ -83,4 +84,7 @@ class DiscordBotClient(discord.Client):
                 error,
             )
 
+
+    async def send_outbound(self, msg: OutboundMessage) -> None:
+        """Send a outbund message using Discord channel."""
 
