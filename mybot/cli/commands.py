@@ -4,6 +4,7 @@ import signal
 import sys
 from pathlib import Path
 from typing import Any
+import uuid
 
 import typer
 from prompt_toolkit import PromptSession
@@ -84,6 +85,7 @@ def onboard():
 def agent(
     markdown: bool = typer.Option(True, "--markdown/--no-markdown", help="Render assistant output as Markdown"),
 ):
+    client_id = f"cli-{uuid.uuid4().hex[:12]}"
     bus = MessageBus()
     config = load_config()
     agent = AgentLoop(
@@ -154,7 +156,7 @@ def agent(
                     await bus.publish_inbound(InboundMessage(
                         channel="cli",
                         sender_id="user",
-                        chat_id = "agent",
+                        chat_id = client_id,
                         content=user_input
                     ))
 

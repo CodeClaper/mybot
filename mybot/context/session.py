@@ -1,5 +1,4 @@
 import json
-import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -70,7 +69,6 @@ class Session:
 
     def get_archive_name(self) -> str:
         """Get archive name."""
-        now = datetime.now()
         for message in self.messages:
             if (message.get("role")) == "user":
                 return f"{message.get("content", "")}_{self.created_at}.jsonl"
