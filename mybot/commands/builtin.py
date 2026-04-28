@@ -8,9 +8,9 @@ async def cmd_new(ctx: CommandContext) -> OutboundMessage:
     loop = ctx.loop
     msg = ctx.msg
     session = ctx.session or loop.session_manager.get_or_create(ctx.key)
-    session.clear()
     loop.session_manager.archive(session)
     loop.session_manager.invalidate(session.key)
+    session.clear()
     return OutboundMessage(
         channel=msg.channel, chat_id=msg.chat_id, 
         content="New session started",

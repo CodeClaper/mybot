@@ -68,6 +68,14 @@ class Session:
 
         return out
 
+    def get_archive_name(self) -> str:
+        """Get archive name."""
+        now = datetime.now()
+        for message in self.messages:
+            if (message.get("role")) == "user":
+                return f"{message.get("content", "")}_{self.created_at}.jsonl"
+        return f"{self.created_at}.jsonl"
+
 
     def clear(self) -> None:
         """Clear all messages and reset the session to initial state."""
@@ -177,7 +185,7 @@ class SessionManager:
     def archive(self, session: Session) -> None:
         """archive a session. """
         path = self._get_session_path(session.key)
-        path.rename(path.with_name(f"{uuid.uuid4()}.jsonl"))
+        path.rename(path.with_name(session.get_archive_name()))
         
 
     def invalidate(self, key: str) -> None:
