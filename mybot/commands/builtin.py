@@ -1,4 +1,4 @@
-from mybot import __name__
+from mybot import __logo__, __name__
 from mybot.bus.message import OutboundMessage
 from mybot.commands.router import CommandContext, CommandRouter
 
@@ -59,3 +59,17 @@ def register_builtin_commands(router: CommandRouter) -> None:
     router.exact("/new", cmd_new)
     router.exact("/history", cmd_history)
     router.exact("/help", cmd_help)
+
+
+def build_help_text() -> str:
+    """Build canonical help text shared across channels."""
+    lines = [
+        f"{__logo__} {__name__} commands:",
+        "/new — Start a new conversation",
+        "/stop — Stop the current task",
+        "/restart — Restart the bot",
+        "/status — Show bot status",
+        "/help — Show available commands",
+    ]
+    return "\n".join(lines)
+

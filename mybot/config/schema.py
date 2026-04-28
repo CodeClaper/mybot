@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from pydantic_settings import BaseSettings
@@ -31,10 +32,22 @@ class WeixinConfig(Base):
     cdn_base_url: str = "https://novac2c.cdn.weixin.qq.com/c2c"
     poll_timeout: int = DEFAULT_LONG_POLL_TIMEOUT_S
 
+class DiscordConfig(Base):
+    """Discord channel configuration."""
+    enabled: bool = False
+    token: str = ""
+    allow_from: list[str] = Field(default_factory=list)
+    intents: int = 37377
+    group_policy: Literal["mention", "open"] = "mention"
+    read_receipt_emoji: str = "👀"
+    working_emoji: str = "🔧"
+    working_emoji_delay: float = 2.0
+
 
 class ChannelsConfig(Base):
     """Channels configuration."""
     weixin: WeixinConfig = Field(default_factory=WeixinConfig) 
+    discord: DiscordConfig = Field(default_factory=DiscordConfig)
 
     
 class ProviderConfig(Base):

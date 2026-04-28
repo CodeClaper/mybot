@@ -1,7 +1,5 @@
 
 import asyncio
-from logging import log
-
 from loguru import logger
 
 from mybot.bus.queue import MessageBus
