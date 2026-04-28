@@ -1,11 +1,7 @@
 from asyncio import Task
 import asyncio
-import io
 from typing import Any
-import aiohttp
 import discord
-from discord import app_commands
-from discord.abc import Messageable
 from loguru import logger
 
 from mybot.bus.message import OutboundMessage

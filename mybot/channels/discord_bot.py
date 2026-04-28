@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-from discord.ext.commands import bot
 from mybot.bus.message import OutboundMessage
 from mybot.channels.discord import DiscordChannel
 from loguru import logger
