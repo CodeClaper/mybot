@@ -34,7 +34,7 @@ class DiscordChannel(BaseChannel):
         self._working_emoji_tasks: dict[str, asyncio.Task[None]] = {}
     
     async def login(self, force: bool = False) -> bool:
-        logger.warning("Not support direct login for discord channel.")
+        logger.error("Not support direct login for discord channel.")
         return False
 
     async def start(self) -> None:
