@@ -28,7 +28,7 @@ The processing engine. Per message it:
 
 ### System Prompt (`mybot/context/context.py`)
 Assembled from:
-- **Identity** — agent name ("nanobot"), runtime info, workspace path, platform policy
+- **Identity** — agent name ("mybot"), runtime info, workspace path, platform policy
 - **Always-active skills** — skills with `always: true` that are injected into every system prompt
 - **Skills summary** — list of all available skills with descriptions (full content loaded on-demand when the agent reads the SKILL.md)
 
