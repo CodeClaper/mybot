@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from loguru import logger
+
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.schema import Config
@@ -70,6 +72,26 @@ class BaseChannel(ABC):
             msg: The message to send.
         """
         pass
+
+    def is_allowed(self, sender_id: str) -> bool:
+        """
+        Check if sender is permitted.
+        Empty list -> deny All;
+        "*"        -> allow all;
+        """
+        if isinstance(self._config, dict):
+            if "allow_from" in self._config:
+                allow_list = self._config.get("allow_from")
+            else:
+                allow_list = self._config.get("allowFrom", [])
+        else:
+            allow_list = getattr(self._config, "allow_from", [])
+        if not allow_list:
+            logger.warning("{}: allow_from is empty - all access denied.", self.name)
+            return False
+        if "*" in allow_list:
+            return True
+        return str(sender_id) in allow_list
 
     async def _handle_message(
         self,
