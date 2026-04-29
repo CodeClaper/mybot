@@ -280,6 +280,11 @@ class DiscordBotClient(discord.Client):
     async def on_ready(self) -> None:
         self._channel._bot_user_id = str(self.user.id) if self.user.id else None
         logger.info("Discord bot connected as user {}", self._channel._bot_user_id)
+        try:
+            synced = await self.tree.sync()
+            logger.info("Discord app commands synced: {}", len(synced))
+        except Exception as e:
+            logger.warning("Discord app command sync failed: {}", e)
 
     async def on_message(self, message: discord.Message) -> None:
         await self._channel.handle_discord_message(message)
