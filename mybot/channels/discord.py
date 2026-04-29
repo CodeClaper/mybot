@@ -33,6 +33,7 @@ class DiscordChannel(BaseChannel):
         self._typing_tasks: dict[str, asyncio.Task[None]] = {}
         self._pending_reactions: dict[str, Any] = {}  # chat_id -> message object
         self._working_emoji_tasks: dict[str, asyncio.Task[None]] = {}
+        self._known_channels: dict[str, Any] = {}
     
     async def login(self, force: bool = False) -> bool:
         logger.error("Not support direct login for discord channel.")
@@ -112,7 +113,6 @@ class DiscordChannel(BaseChannel):
                 await self._stop_typing(msg.chat_id)
                 await self._clear_reactions(msg.chat_id)
 
-
     async def handle_discord_message(self, message: discord.Message) -> None:
         """Handle inbound discord message from discord.py."""
         if self._bot_user_id is not None and str(message.author.id) == self._bot_user_id:
@@ -122,6 +122,7 @@ class DiscordChannel(BaseChannel):
 
         sender_id = str(message.author.id)
         channel_id = self._channel_key(message.channel)
+        self._remember_channel(message.channel)
         content = message.content or ""
 
         media_paths, attachment_marks = await self._download_attachments(message.attachments)
@@ -218,6 +219,13 @@ class DiscordChannel(BaseChannel):
         channel_id = getattr(channel_or_id, "id", channel_or_id)
         return str(channel_id)
 
+
+    def _remember_channel(self, channel: Any) -> None:
+        self._known_channels[self._channel_key(channel)] = channel
+
+    def _forget_channel(self, channel_or_id: Any) -> None:
+        self._known_channels.pop(self._channel_key(channel_or_id), None)
+
     async def _start_typing(self, channel: Messageable) -> None:
         """Start periodic typing indicator for a channel."""
         channel_id = self._channel_key(channel)
@@ -299,6 +307,15 @@ class DiscordBotClient(discord.Client):
     async def on_message(self, message: discord.Message) -> None:
         await self._channel.handle_discord_message(message)
 
+    async def on_thread_delete(self, thread: discord.Thread) -> None:
+        self._channel._forget_channel(thread)
+
+    async def on_thread_update(self, before: discord.Thread, after: discord.Thread) -> None:
+        if getattr(after, "archived", False):
+            self._channel._forget_channel(after)
+        else:
+            self._channel._remember_channel(after)
+
     async def send_outbound(self, msg: OutboundMessage) -> None:
         """Send a outbund message using Discord channel."""
         channel_id = int(msg.chat_id)
@@ -334,7 +351,6 @@ class DiscordBotClient(discord.Client):
                 kwargs["allowed_mentions"] = mention_setting
             await channel.send(**kwargs)
 
-    
     async def _send_file(
         self, 
         channel: Messageable, 
@@ -378,6 +394,10 @@ class DiscordBotClient(discord.Client):
 
         if channel_id is None:
             logger.warning("Discord slash command missing channel_id: {}", command_text)
+
+        if not self._channel.is_allowed(sender_id):
+            await self._reply_ephemeral(interaction, "You are not allowed to use this bot.")
+            return
         
         await self._reply_ephemeral(interaction, f"Processing {command_text}...")
         await self._channel._handle_message(
