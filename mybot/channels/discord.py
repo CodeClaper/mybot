@@ -1,4 +1,5 @@
 import asyncio
+import aiohttp
 import discord
 
 from typing import Any
@@ -50,7 +51,26 @@ class DiscordChannel(BaseChannel):
         try:
             intents = discord.Intents.none()
             intents.value = self._config.intents
-            self._client = DiscordBotClient(self, intents=intents)
+            proxy_auth = None
+            has_user = bool(self._config.proxy_username)
+            has_pass = bool(self._config.proxy_password)
+            if has_user and has_pass:
+                proxy_auth = aiohttp.BasicAuth(
+                    login=self._config.proxy_username, 
+                    password=self._config.proxy_password
+                )
+            elif has_user != has_pass:
+                logger.warning(
+                    "Discord proxy auth incomplete: both proxy_username and "
+                    "proxy_password must be set; ignoring partial credentials",
+                )
+
+            self._client = DiscordBotClient(
+                self, 
+                intents=intents,
+                proxy=self._config.proxy,
+                proxy_auth=proxy_auth
+            )
         except Exception as e:
             logger.error("Fail to initialize Discord client: {}", e)
             self._client = None
@@ -245,8 +265,14 @@ class DiscordChannel(BaseChannel):
 class DiscordBotClient(discord.Client):
     """discord.py client that forwards events to the channle."""
 
-    def __init__(self, channel: DiscordChannel, intents: discord.Intents) -> None:
-        super().__init__(intents=intents)
+    def __init__(
+        self, 
+        channel: DiscordChannel, 
+        intents: discord.Intents,
+        proxy: str | None = None,
+        proxy_auth: aiohttp.BasicAuth | None = None
+    ) -> None:
+        super().__init__(intents=intents, proxy=proxy, proxy_auth=proxy_auth)
         self._channel = channel
         self.tree = discord.app_commands.CommandTree(self)
         self._register_app_commands()
