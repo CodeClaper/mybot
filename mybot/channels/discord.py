@@ -5,7 +5,6 @@ import discord
 from discord.abc import Messageable
 from loguru import logger
 
-from mybot.bus import message
 from mybot.bus.message import OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.config.path import get_media_dir
@@ -159,7 +158,7 @@ class DiscordChannel(BaseChannel):
     @staticmethod
     def _compose_inbound_content(content: str, attachment_markers: list[str]) -> str:
         """Combine message text with attachment marker."""
-        content_parts = [content] if content or []
+        content_parts = [content] if content else []
         content_parts.extend(attachment_markers)
         return "\n".join(part for part in content_parts if part) or "[empty message]"
 
