@@ -29,3 +29,8 @@ def get_data_path() -> Path:
 def get_runtime_subdir(name: str) -> Path:
     """Return a named rutime sub directory under the data dir. """
     return ensure_dir(get_data_path() / name)
+
+def get_media_dir(channel: str | None = None) -> Path:
+    """Return the media directory, optionally namespaced per channel."""
+    base = get_runtime_subdir("media")
+    return ensure_dir(base / channel) if channel else base

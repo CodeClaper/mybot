@@ -25,6 +25,9 @@ class DiscordBotClient(discord.Client):
         self._channel._bot_user_id = str(self.user.id) if self.user.id else None
         logger.info("Discord bot connected as user {}", self._channel._bot_user_id)
 
+    async def on_message(self, message: discord.Message) -> None:
+        await self._channel.handle_discord_message(message)
+
     async def send_outbound(self, msg: OutboundMessage) -> None:
         """Send a outbund message using Discord channel."""
         channel_id = int(msg.chat_id)

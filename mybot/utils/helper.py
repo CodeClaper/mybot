@@ -2,6 +2,12 @@
 
 import re
 
+_UNSAFE_CHARS = re.compile(r'[<>:"/\\|?*]')
+
+def safe_filename(name: str) -> str:
+    """Replace unsafe path characters with underscores."""
+    return _UNSAFE_CHARS.sub("_", name).strip()
+
 def split_message(content: str, max_len: int = 2000) -> list[str]:
     """
     Split content into chunks within max_len.
@@ -40,3 +46,4 @@ def strip_think(text: str) -> str:
     text = re.sub(r"<think>[\s\S]*?</think>", "", text)
     text = re.sub(r"<think>[\s\S]*$", "", text)
     return text.strip()
+
