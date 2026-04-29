@@ -115,7 +115,11 @@ class DiscordChannel(BaseChannel):
 
     async def handle_discord_message(self, message: discord.Message) -> None:
         """Handle inbound discord message from discord.py."""
-        
+        if self._bot_user_id is not None and str(message.author.id) == self._bot_user_id:
+            return
+        if self._is_system_message(message):
+            return
+
         sender_id = str(message.author.id)
         channel_id = self._channel_key(message.channel)
         content = message.content or ""
@@ -188,6 +192,12 @@ class DiscordChannel(BaseChannel):
         content_parts = [content] if content else []
         content_parts.extend(attachment_markers)
         return "\n".join(part for part in content_parts if part) or "[empty message]"
+    
+    @staticmethod
+    def _is_system_message(message: discord.Message) -> bool:
+        """Return True for Discord system messages that carry no user prompt."""
+        message_type = getattr(message, "type", discord.MessageType.default)
+        return message_type not in {discord.MessageType.default, discord.MessageType.reply}
 
     @staticmethod
     def _build_inbound_metadata(message: discord.Message) -> dict[str, str | None]:
