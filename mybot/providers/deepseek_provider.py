@@ -3,6 +3,7 @@ import string
 from typing import Any
 
 import json_repair
+from loguru import logger
 from openai import AsyncOpenAI
 
 from mybot.providers.base import BaseProvider, LLMResponse, ToolCallRequest
@@ -27,6 +28,7 @@ class DeepSeekProvider(BaseProvider):
             api_key=api_key or "",
             base_url=api_base or _DEEPSEEK_BASE_URL,
         )
+        logger.debug("Using deepseek provider")
 
     async def chat(
         self,

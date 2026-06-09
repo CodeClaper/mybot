@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from pydantic.alias_generators import to_snake
 
 @dataclass()
 class ProviderSpec:
@@ -10,6 +10,10 @@ class ProviderSpec:
     env_key: str
     display_name: str = ""
     litellm_prefix: str = ""
+
+    @property
+    def label(self) -> str:
+        return self.display_name or self.name.title()
 
 
 PROVIDERS: tuple[ProviderSpec, ...] = (
@@ -35,3 +39,17 @@ PROVIDERS: tuple[ProviderSpec, ...] = (
     )
 )
 
+
+
+
+# ---------------------------------------------------------------------------
+# Lookup helpers
+# ---------------------------------------------------------------------------
+
+def find_by_name(name: str) -> ProviderSpec | None:
+    """Find a provider spec by config field name, e.g. "dashscope"."""
+    normalized = to_snake(name.replace("-", "_"))
+    for spec in PROVIDERS:
+        if spec.name == normalized:
+            return spec
+    return None

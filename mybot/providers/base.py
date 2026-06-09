@@ -1,4 +1,3 @@
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
@@ -28,6 +27,15 @@ class LLMResponse:
     def has_error(self) -> bool:
         return self.finish_reason == "error"
 
+@dataclass(frozen=True)
+class GenerationSettings:
+    """Default generation settings."""
+
+    temperature: float = 0.7
+    max_tokens: int = 4096
+    reasoning_effort: str | None = None
+
+
 class BaseProvider(ABC):
     def __init__(self, api_key: str | None = None, api_base: str | None = None) -> None:
         self.api_key = api_key
@@ -37,7 +45,10 @@ class BaseProvider(ABC):
     async def chat(
         self, 
         messages: list[dict[str, Any]],
-        tools: list[dict[str, Any]] | None = None
+        tools: list[dict[str, Any]] | None = None,
+        model: str | None = None,
+        max_tokens: int = 8094,
+        temperature: float = 0.1
     ) -> LLMResponse:
         """
         Send a chat completion request.

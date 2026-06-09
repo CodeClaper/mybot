@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 
@@ -34,3 +35,19 @@ def get_media_dir(channel: str | None = None) -> Path:
     """Return the media directory, optionally namespaced per channel."""
     base = get_runtime_subdir("media")
     return ensure_dir(base / channel) if channel else base
+
+
+def get_package_dir() -> Path:
+    """Return the mybot package directory.
+
+    Works in dev mode (from source) and PyInstaller frozen mode.
+    """
+    if getattr(sys, 'frozen', False):
+        return Path(sys._MEIPASS) / "mybot"
+    return Path(__file__).parent.parent
+
+
+def get_web_dist_path() -> Path | None:
+    """Return the web dist directory if it exists, else None."""
+    dist = get_package_dir() / "web" / "dist"
+    return dist if dist.is_dir() else None

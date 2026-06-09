@@ -4,9 +4,10 @@ import os
 import re
 import shutil
 from pathlib import Path
+from mybot.config.path import get_package_dir
 
 ## Default builtin skills direcotry.
-BUILTIN_SKILL_DIR = Path(__file__).parent.parent / "skills"
+BUILTIN_SKILL_DIR = get_package_dir() / "skills"
 STRIP_SKILL_FRONTMATTER = re.compile(r"^---\s*\r?\n(.*?)\r?\n---\s*\r?\n?", re.DOTALL)
 
 class SkillLoader:
@@ -19,7 +20,7 @@ class SkillLoader:
 
     def __init__(self, workspace: Path, builtin_skills_dir: Path | None = None) -> None:
         self.workspace = workspace
-        self.workpace_skills_dir = workspace / "skills"
+        self.workpace_skills_dir = workspace / "skills" 
         self.builtin_skills_dir = builtin_skills_dir or BUILTIN_SKILL_DIR
 
 

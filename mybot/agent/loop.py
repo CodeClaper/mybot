@@ -5,14 +5,18 @@ from typing import Any, Awaitable, Callable
 
 from loguru import logger
 
+from mybot.agent.skill import BUILTIN_SKILL_DIR
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.commands.builtin import register_builtin_commands
 from mybot.commands.router import CommandContext, CommandRouter
+from mybot.config.path import get_worksapce_path
 from mybot.config.schema import Config
 from mybot.context.context import ContextBuilder
 from mybot.context.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
+from mybot.tools.fielstate import FileStates
+from mybot.tools.filesystem import ReadFileTool, WriteFileTool
 from mybot.tools.message import MessageTool
 from mybot.tools.registry import TooRegistry
 from mybot.tools.shell import ShellTool
@@ -34,8 +38,8 @@ class AgentLoop:
 
     def __init__(
         self, 
-        workspace: Path,
         provider: BaseProvider,
+        workspace: Path,
         bus: MessageBus,
         session_manager: SessionManager,
         config: Config
@@ -72,11 +76,16 @@ class AgentLoop:
     def _register_defaul_tools(self) -> None:
         """Register default tools."""
         web_config = self.config.tools.web
+        workspace = get_worksapce_path()
+        extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
+        file_states = FileStates()
+        skills_dir = workspace / "skills"
         self.tool_registry.register(ShellTool())
         self.tool_registry.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
         self.tool_registry.register(WebFetchTool(proxy=web_config.proxy))
         self.tool_registry.register(MessageTool(send_callback=self.bus.publish_outbound))
-
+        self.tool_registry.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
+        self.tool_registry.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
 
     async def _dispatch(self, msg: InboundMessage) -> None:
         """Dispath the message."""
@@ -141,6 +150,7 @@ class AgentLoop:
             response = await self.provider.chat(
                 messages=messages,
                 tools=self.tool_registry.get_definations(),
+                model=self._get_model_name()
             )
 
             if response.has_error:
@@ -254,3 +264,17 @@ class AgentLoop:
         if not text:
             return None
         return strip_think(text) or None
+
+
+    def _get_model_name(self) -> str | None:
+        """Return the resolved startup model for readonly WebUI display."""
+        try:
+            from mybot.config.loader import load_config
+
+            model = load_config().resolve_preset().model.strip()
+            if not model:
+                return None
+            return model.split("/", 1)[1] if "/" in model else model
+        except Exception as e:
+            logger.debug("Could not load model name: {}", e)
+            return None

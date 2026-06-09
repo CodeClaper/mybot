@@ -4,6 +4,7 @@ from typing import Any
 
 import json_repair
 from litellm import acompletion
+from loguru import logger
 
 from mybot.providers.base import BaseProvider, LLMResponse, ToolCallRequest
 
@@ -21,6 +22,7 @@ class DefaultProvider(BaseProvider):
     ) -> None:
         super().__init__(api_key, api_base)
         self.default_model = default_model
+        logger.debug("Using default provider")
 
     async def chat(
         self, 
@@ -33,6 +35,7 @@ class DefaultProvider(BaseProvider):
         kargs: dict[str, Any] = {
             "model": model or self.default_model,
             "messages": messages,
+            "stream": True,
             "max_tokens": max_tokens,
             "temperature": temperature
         }
