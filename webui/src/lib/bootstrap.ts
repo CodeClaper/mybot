@@ -1,8 +1,8 @@
 import type { BootstrapResponse } from "./types";
 
-const SECRET_STORAGE_KEY = "kxbot-webui.bootstrap-secret";
-const ACCESS_TPOKEN_STORAGE_KEY = "kxbot-webui.access_token"
-const REFRESH_TPOKEN_STORAGE_KEY = "kxbot-webui.refresh_token"
+const SECRET_STORAGE_KEY = "mybot-webui.bootstrap-secret";
+const ACCESS_TPOKEN_STORAGE_KEY = "mybot-webui.access_token"
+const REFRESH_TPOKEN_STORAGE_KEY = "mybot-webui.refresh_token"
 
 /** Read a previously saved bootstrap secret from localStorage. */
 export function loadSavedSecret(): string {

@@ -19,6 +19,6 @@ if (!("randomUUID" in globalThis.crypto)) {
 beforeEach(async () => {
   await i18n.changeLanguage("en");
   document.documentElement.lang = "en";
-  document.title = "kxbot";
-  localStorage.setItem("kxbot.locale", "en");
+  document.title = "mybot";
+  localStorage.setItem("mybot.locale", "en");
 });

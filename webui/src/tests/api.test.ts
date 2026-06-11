@@ -123,7 +123,7 @@ describe("webui API helpers", () => {
           },
           {
             command: "/restart",
-            title: "Restart kxbot",
+            title: "Restart mybot",
             description: "Restart the bot process.",
             icon: "rotate-cw",
           },

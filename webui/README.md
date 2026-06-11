@@ -69,7 +69,7 @@ traffic to `http://127.0.0.1:8765`.
 If your gateway listens on a non-default port, point the dev server at it:
 
 ```bash
-KXBOT_API_URL=http://127.0.0.1:9000 bun run dev
+MYBOT_API_URL=http://127.0.0.1:9000 bun run dev
 ```
 
 ### Access from another device (LAN)

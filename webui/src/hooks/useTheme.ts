@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
-const STORAGE_KEY = "kxbot-webui.theme";
+const STORAGE_KEY = "mybot-webui.theme";
 
 function readStored(): Theme | null {
   try {

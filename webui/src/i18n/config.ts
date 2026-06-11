@@ -1,4 +1,4 @@
-export const LOCALE_STORAGE_KEY = "kxbot.locale";
+export const LOCALE_STORAGE_KEY = "mybot.locale";
 
 export const supportedLocales = [
   { code: "en", label: "English", nativeLabel: "English" },

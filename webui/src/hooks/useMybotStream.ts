@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useClient } from "@/providers/ClientProvider";
 import { toMediaAttachment } from "@/lib/media";
-import type { StreamError } from "@/lib/kxbot-client";
+import type { StreamError } from "@/lib/mybot-client";
 import type {
   InboundEvent,
   OutboundImageGeneration,
