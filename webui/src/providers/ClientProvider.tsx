@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from "react";
 
-import type { KxbotClient } from "@/lib/kxbot-client";
+import type { KxbotClient } from "@/lib/mybot-client";
 
 interface ClientContextValue {
   client: KxbotClient;

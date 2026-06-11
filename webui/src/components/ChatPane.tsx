@@ -83,7 +83,7 @@ export function ChatPane({ session, onNewChat }: ChatPaneProps) {
               What can I do for you?
             </h1>
             <p className="max-w-md text-center text-sm text-muted-foreground">
-              Your conversations are persisted locally under the kxbot
+              Your conversations are persisted locally under the mybot
               workspace. Start typing and I'll open a new chat.
             </p>
           </div>

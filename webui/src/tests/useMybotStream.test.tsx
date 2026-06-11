@@ -43,7 +43,7 @@ function wrap(client: ReturnType<typeof fakeClient>["client"]) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <ClientProvider
-        client={client as unknown as import("@/lib/kxbot-client").KxbotClient}
+        client={client as unknown as import("@/lib/mybot-client").KxbotClient}
         token="tok"
       >
         {children}

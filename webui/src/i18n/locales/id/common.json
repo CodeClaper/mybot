@@ -1,13 +1,13 @@
 {
   "app": {
-    "brand": "kxbot",
+    "brand": "mybot",
     "loading": {
-      "connecting": "Menghubungkan ke kxbot…",
-      "boot": "Memuat kxbot…"
+      "connecting": "Menghubungkan ke mybot…",
+      "boot": "Memuat mybot…"
     },
     "error": {
-      "title": "Tidak dapat menjangkau kxbot",
-      "gatewayHint": "Pastikan gateway sedang berjalan (`kxbot gateway`) dan halaman ini dibuka pada mesin yang sama."
+      "title": "Tidak dapat menjangkau mybot",
+      "gatewayHint": "Pastikan gateway sedang berjalan (`mybot gateway`) dan halaman ini dibuka pada mesin yang sama."
     },
     "login": {
       "title": "Masuk",
@@ -19,19 +19,19 @@
     },
     "system": {
       "section": "Sistem",
-      "restartHint": "Mulai ulang kxbot untuk menerapkan perubahan runtime.",
-      "restart": "Mulai ulang kxbot",
+      "restartHint": "Mulai ulang mybot untuk menerapkan perubahan runtime.",
+      "restart": "Mulai ulang mybot",
       "restarting": "Memulai ulang..."
     },
     "restart": {
       "completed": "Mulai ulang selesai dalam {{seconds}} dtk."
     },
     "documentTitle": {
-      "base": "kxbot",
-      "chat": "{{title}} · kxbot"
+      "base": "mybot",
+      "chat": "{{title}} · mybot"
     },
     "meta": {
-      "description": "UI web kxbot — ngobrol dengan workspace kxbot Anda."
+      "description": "UI web mybot — ngobrol dengan workspace mybot Anda."
     }
   },
   "sidebar": {
@@ -66,14 +66,14 @@
       "language": "Bahasa",
       "provider": "Penyedia",
       "model": "Model",
-      "restart": "Mulai ulang kxbot",
+      "restart": "Mulai ulang mybot",
       "configPath": "Path konfigurasi"
     },
     "help": {
       "theme": "Beralih antara tampilan terang dan gelap.",
       "language": "Pilih bahasa yang digunakan WebUI.",
       "provider": "Pilih penyedia untuk permintaan model baru.",
-      "model": "Atur nama model default yang digunakan kxbot.",
+      "model": "Atur nama model default yang digunakan mybot.",
       "configPath": "File konfigurasi gateway yang sedang digunakan."
     },
     "values": {
@@ -85,7 +85,7 @@
       "loading": "Memuat pengaturan...",
       "loadError": "Tidak dapat memuat pengaturan",
       "unsaved": "Ada perubahan yang belum disimpan.",
-      "savedRestart": "Tersimpan. Mulai ulang kxbot untuk menerapkan."
+      "savedRestart": "Tersimpan. Mulai ulang mybot untuk menerapkan."
     },
     "actions": {
       "save": "Simpan",
@@ -188,7 +188,7 @@
       "imageQuickActions": {
         "icon": {
           "title": "Desain ikon aplikasi",
-          "prompt": "Buat ikon aplikasi 1:1 yang bersih untuk kxbot: robot ramah, gaya vektor sederhana, palet biru dan putih lembut, tanpa teks."
+          "prompt": "Buat ikon aplikasi 1:1 yang bersih untuk mybot: robot ramah, gaya vektor sederhana, palet biru dan putih lembut, tanpa teks."
         },
         "sticker": {
           "title": "Buat stiker",
@@ -267,7 +267,7 @@
             "description": "Batalkan giliran agent yang sedang aktif di chat ini."
           },
           "restart": {
-            "title": "Mulai ulang kxbot",
+            "title": "Mulai ulang mybot",
             "description": "Mulai ulang proses bot di tempat."
           },
           "status": {

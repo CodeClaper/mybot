@@ -48,7 +48,7 @@ function makeClient() {
 function wrap(client: ReturnType<typeof makeClient>, children: ReactNode) {
   return (
     <ClientProvider
-      client={client as unknown as import("@/lib/kxbot-client").KxbotClient}
+      client={client as unknown as import("@/lib/mybot-client").KxbotClient}
       token="tok"
     >
       {children}
@@ -208,7 +208,7 @@ describe("ThreadShell", () => {
           client,
           <ThreadShell
             session={null}
-            title="kxbot"
+            title="mybot"
             onToggleSidebar={() => {}}
             onGoHome={() => {}}
             onNewChat={onNewChat}
@@ -233,7 +233,7 @@ describe("ThreadShell", () => {
         client,
         <ThreadShell
           session={null}
-          title="kxbot"
+          title="mybot"
           onToggleSidebar={() => {}}
           onGoHome={() => {}}
           onNewChat={onNewChat}
@@ -268,7 +268,7 @@ describe("ThreadShell", () => {
         client,
         <ThreadShell
           session={null}
-          title="kxbot"
+          title="mybot"
           onToggleSidebar={() => {}}
           onCreateChat={onCreateChat}
         />,
@@ -545,7 +545,7 @@ describe("ThreadShell", () => {
           client,
           <ThreadShell
             session={null}
-            title="kxbot"
+            title="mybot"
             onToggleSidebar={() => {}}
             onNewChat={() => {}}
           />,
@@ -604,7 +604,7 @@ describe("ThreadShell", () => {
         client,
         <ThreadShell
           session={null}
-          title="kxbot"
+          title="mybot"
           onToggleSidebar={() => {}}
           onNewChat={() => {}}
         />,
@@ -632,7 +632,7 @@ describe("ThreadShell", () => {
         client,
         <ThreadShell
           session={null}
-          title="kxbot"
+          title="mybot"
           onToggleSidebar={() => {}}
           onNewChat={() => {}}
         />,

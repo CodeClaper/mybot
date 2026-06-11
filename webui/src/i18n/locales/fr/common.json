@@ -1,13 +1,13 @@
 {
   "app": {
-    "brand": "kxbot",
+    "brand": "mybot",
     "loading": {
-      "connecting": "Connexion à kxbot…",
-      "boot": "Chargement de kxbot…"
+      "connecting": "Connexion à mybot…",
+      "boot": "Chargement de mybot…"
     },
     "error": {
-      "title": "Impossible de joindre kxbot",
-      "gatewayHint": "Assurez-vous que la gateway est en cours d’exécution (`kxbot gateway`) et que cette page est ouverte sur la même machine."
+      "title": "Impossible de joindre mybot",
+      "gatewayHint": "Assurez-vous que la gateway est en cours d’exécution (`mybot gateway`) et que cette page est ouverte sur la même machine."
     },
     "login": {
       "title": "Connexion",
@@ -19,19 +19,19 @@
     },
     "system": {
       "section": "Système",
-      "restartHint": "Redémarrez kxbot pour appliquer les changements d’exécution.",
-      "restart": "Redémarrer kxbot",
+      "restartHint": "Redémarrez mybot pour appliquer les changements d’exécution.",
+      "restart": "Redémarrer mybot",
       "restarting": "Redémarrage..."
     },
     "restart": {
       "completed": "Redémarrage terminé en {{seconds}} s."
     },
     "documentTitle": {
-      "base": "kxbot",
-      "chat": "{{title}} · kxbot"
+      "base": "mybot",
+      "chat": "{{title}} · mybot"
     },
     "meta": {
-      "description": "Interface web kxbot — discutez avec votre espace de travail kxbot."
+      "description": "Interface web mybot — discutez avec votre espace de travail mybot."
     }
   },
   "sidebar": {
@@ -66,14 +66,14 @@
       "language": "Langue",
       "provider": "Fournisseur",
       "model": "Modèle",
-      "restart": "Redémarrer kxbot",
+      "restart": "Redémarrer mybot",
       "configPath": "Chemin de configuration"
     },
     "help": {
       "theme": "Basculer entre les apparences claire et sombre.",
       "language": "Choisissez la langue utilisée par le WebUI.",
       "provider": "Sélectionnez le fournisseur des nouvelles requêtes de modèle.",
-      "model": "Définissez le nom du modèle par défaut utilisé par kxbot.",
+      "model": "Définissez le nom du modèle par défaut utilisé par mybot.",
       "configPath": "Le fichier de configuration actuellement utilisé par la passerelle."
     },
     "values": {
@@ -85,7 +85,7 @@
       "loading": "Chargement des paramètres...",
       "loadError": "Impossible de charger les paramètres",
       "unsaved": "Modifications non enregistrées.",
-      "savedRestart": "Enregistré. Redémarrez kxbot pour appliquer."
+      "savedRestart": "Enregistré. Redémarrez mybot pour appliquer."
     },
     "actions": {
       "save": "Enregistrer",
@@ -188,7 +188,7 @@
       "imageQuickActions": {
         "icon": {
           "title": "Créer une icône d’app",
-          "prompt": "Générez une icône d’application 1:1 propre pour kxbot : robot sympathique, style vectoriel simple, palette douce bleu et blanc, sans texte."
+          "prompt": "Générez une icône d’application 1:1 propre pour mybot : robot sympathique, style vectoriel simple, palette douce bleu et blanc, sans texte."
         },
         "sticker": {
           "title": "Créer un sticker",
@@ -267,7 +267,7 @@
             "description": "Annuler le tour agent actif pour cette discussion."
           },
           "restart": {
-            "title": "Redémarrer kxbot",
+            "title": "Redémarrer mybot",
             "description": "Redémarrer le processus du bot sur place."
           },
           "status": {

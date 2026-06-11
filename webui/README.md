@@ -1,6 +1,6 @@
-# kxbot webui
+# mybot webui
 
-The browser front-end for the kxbot gateway. It is built with Vite + React 18 +
+The browser front-end for the mybot gateway. It is built with Vite + React 18 +
 TypeScript + Tailwind 3 + shadcn/ui, talks to the gateway over the WebSocket
 multiplex protocol, and reads session metadata from the embedded REST surface
 on the same port.
@@ -22,12 +22,12 @@ For the project overview, install guide, and general docs map, see the root
 
 ```text
 webui/                 source tree (this directory)
-kxbot/web/dist/      build output served by the gateway
+mybot/web/dist/      build output served by the gateway
 ```
 
 ## Develop from source
 
-### 1. Install kxbot from source
+### 1. Install mybot from source
 
 From the repository root:
 
@@ -37,7 +37,7 @@ pip install -e .
 
 ### 2. Enable the WebSocket channel
 
-In `~/.kxbot/config.json`:
+In `~/.mybot/config.json`:
 
 ```json
 { "channels": { "websocket": { "enabled": true } } }
@@ -48,7 +48,7 @@ In `~/.kxbot/config.json`:
 In one terminal:
 
 ```bash
-kxbot gateway
+mybot gateway
 ```
 
 ### 4. Start the WebUI dev server
@@ -74,7 +74,7 @@ KXBOT_API_URL=http://127.0.0.1:9000 bun run dev
 
 ### Access from another device (LAN)
 
-To use the webui from another device on the same network, set `host` to `"0.0.0.0"` and configure a `token` or `tokenIssueSecret` in `~/.kxbot/config.json`:
+To use the webui from another device on the same network, set `host` to `"0.0.0.0"` and configure a `token` or `tokenIssueSecret` in `~/.mybot/config.json`:
 
 ```json
 {
@@ -100,8 +100,8 @@ cd webui
 bun run build
 ```
 
-This writes the production assets to `../kxbot/web/dist`, which is the
-directory served by `kxbot gateway` and bundled into the Python wheel.
+This writes the production assets to `../mybot/web/dist`, which is the
+directory served by `mybot gateway` and bundled into the Python wheel.
 
 If you are cutting a release, run the build before packaging so the published
 wheel contains the current WebUI assets.

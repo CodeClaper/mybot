@@ -1,13 +1,13 @@
 {
   "app": {
-    "brand": "kxbot",
+    "brand": "mybot",
     "loading": {
-      "connecting": "Đang kết nối tới kxbot…",
-      "boot": "Đang tải kxbot…"
+      "connecting": "Đang kết nối tới mybot…",
+      "boot": "Đang tải mybot…"
     },
     "error": {
-      "title": "Không thể kết nối tới kxbot",
-      "gatewayHint": "Hãy chắc chắn gateway đang chạy (`kxbot gateway`) và trang này được mở trên cùng máy."
+      "title": "Không thể kết nối tới mybot",
+      "gatewayHint": "Hãy chắc chắn gateway đang chạy (`mybot gateway`) và trang này được mở trên cùng máy."
     },
     "login": {
       "title": "Đăng nhập",
@@ -19,19 +19,19 @@
     },
     "system": {
       "section": "Hệ thống",
-      "restartHint": "Khởi động lại kxbot để áp dụng thay đổi runtime.",
-      "restart": "Khởi động lại kxbot",
+      "restartHint": "Khởi động lại mybot để áp dụng thay đổi runtime.",
+      "restart": "Khởi động lại mybot",
       "restarting": "Đang khởi động lại..."
     },
     "restart": {
       "completed": "Khởi động lại hoàn tất sau {{seconds}} giây."
     },
     "documentTitle": {
-      "base": "kxbot",
-      "chat": "{{title}} · kxbot"
+      "base": "mybot",
+      "chat": "{{title}} · mybot"
     },
     "meta": {
-      "description": "Giao diện web kxbot — trò chuyện với workspace kxbot của bạn."
+      "description": "Giao diện web mybot — trò chuyện với workspace mybot của bạn."
     }
   },
   "sidebar": {
@@ -66,14 +66,14 @@
       "language": "Ngôn ngữ",
       "provider": "Nhà cung cấp",
       "model": "Mô hình",
-      "restart": "Khởi động lại kxbot",
+      "restart": "Khởi động lại mybot",
       "configPath": "Đường dẫn cấu hình"
     },
     "help": {
       "theme": "Chuyển giữa giao diện sáng và tối.",
       "language": "Chọn ngôn ngữ dùng trong WebUI.",
       "provider": "Chọn nhà cung cấp cho các yêu cầu mô hình mới.",
-      "model": "Đặt tên mô hình mặc định mà kxbot sử dụng.",
+      "model": "Đặt tên mô hình mặc định mà mybot sử dụng.",
       "configPath": "Tệp cấu hình gateway hiện đang dùng."
     },
     "values": {
@@ -85,7 +85,7 @@
       "loading": "Đang tải cài đặt...",
       "loadError": "Không thể tải cài đặt",
       "unsaved": "Có thay đổi chưa lưu.",
-      "savedRestart": "Đã lưu. Khởi động lại kxbot để áp dụng."
+      "savedRestart": "Đã lưu. Khởi động lại mybot để áp dụng."
     },
     "actions": {
       "save": "Lưu",
@@ -188,7 +188,7 @@
       "imageQuickActions": {
         "icon": {
           "title": "Thiết kế biểu tượng app",
-          "prompt": "Tạo một biểu tượng ứng dụng 1:1 gọn gàng cho kxbot: robot thân thiện, phong cách vector đơn giản, bảng màu xanh trắng dịu, không có chữ."
+          "prompt": "Tạo một biểu tượng ứng dụng 1:1 gọn gàng cho mybot: robot thân thiện, phong cách vector đơn giản, bảng màu xanh trắng dịu, không có chữ."
         },
         "sticker": {
           "title": "Tạo sticker",
@@ -267,7 +267,7 @@
             "description": "Hủy lượt agent đang chạy trong cuộc trò chuyện này."
           },
           "restart": {
-            "title": "Khởi động lại kxbot",
+            "title": "Khởi động lại mybot",
             "description": "Khởi động lại tiến trình bot tại chỗ."
           },
           "status": {

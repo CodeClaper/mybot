@@ -56,7 +56,7 @@ export function Sidebar(props: SidebarProps) {
             <source srcSet="/brand/logo.svg" type="image/svg+xml" />
             <img
               src="/brand/logo.png"
-              alt="kxbot"
+              alt="mybot"
               className="h-6 w-auto select-none object-contain opacity-95"
               draggable={false}
             />

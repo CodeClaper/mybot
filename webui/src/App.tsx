@@ -35,8 +35,8 @@ type BootState =
       model_name: string | null;
     } ;
 
-const SIDEBAR_STORAGE_KEY = "kxbot-webui.sidebar";
-const RESTART_STARTED_KEY = "kxbot-webui.restartStartedAt";
+const SIDEBAR_STORAGE_KEY = "mybot-webui.sidebar";
+const RESTART_STARTED_KEY = "mybot-webui.restartStartedAt";
 const SIDEBAR_WIDTH = 272;
 type ShellView = "chat" | "settings";
 

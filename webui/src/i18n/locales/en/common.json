@@ -1,13 +1,13 @@
 {
   "app": {
-    "brand": "kxbot",
+    "brand": "mybot",
     "loading": {
-      "connecting": "Connecting to kxbot…",
-      "boot": "Loading kxbot…"
+      "connecting": "Connecting to mybot…",
+      "boot": "Loading mybot…"
     },
     "error": {
-      "title": "Couldn't reach kxbot",
-      "gatewayHint": "Make sure the gateway is running (`kxbot gateway`) and that this page is open on the same machine."
+      "title": "Couldn't reach mybot",
+      "gatewayHint": "Make sure the gateway is running (`mybot gateway`) and that this page is open on the same machine."
     },
     "auth": {
       "title": "Authentication required",
@@ -31,19 +31,19 @@
     },
     "system": {
       "section": "System",
-      "restartHint": "Restart kxbot to apply runtime changes.",
-      "restart": "Restart kxbot",
+      "restartHint": "Restart mybot to apply runtime changes.",
+      "restart": "Restart mybot",
       "restarting": "Restarting..."
     },
     "restart": {
       "completed": "Restart completed in {{seconds}}s."
     },
     "documentTitle": {
-      "base": "kxbot",
-      "chat": "{{title}} · kxbot"
+      "base": "mybot",
+      "chat": "{{title}} · mybot"
     },
     "meta": {
-      "description": "kxbot web UI — chat with your kxbot workspace."
+      "description": "mybot web UI — chat with your mybot workspace."
     }
   },
   "sidebar": {
@@ -85,14 +85,14 @@
       "language": "Language",
       "provider": "Provider",
       "model": "Model",
-      "restart": "Restart kxbot",
+      "restart": "Restart mybot",
       "configPath": "Config path"
     },
     "help": {
       "theme": "Switch between light and dark appearance.",
       "language": "Choose the language used by the WebUI.",
       "provider": "Select the provider that should serve new model requests.",
-      "model": "Set the default model name used by kxbot.",
+      "model": "Set the default model name used by mybot.",
       "configPath": "The gateway configuration file currently in use."
     },
     "values": {
@@ -104,7 +104,7 @@
       "loading": "Loading settings...",
       "loadError": "Could not load settings",
       "unsaved": "Unsaved changes.",
-      "savedRestart": "Saved. Restart kxbot to apply."
+      "savedRestart": "Saved. Restart mybot to apply."
     },
     "actions": {
       "save": "Save",
@@ -211,7 +211,7 @@
       "imageQuickActions": {
         "icon": {
           "title": "Design an app icon",
-          "prompt": "Generate a clean 1:1 app icon for kxbot: friendly robot, simple vector style, soft blue and white palette, no text."
+          "prompt": "Generate a clean 1:1 app icon for mybot: friendly robot, simple vector style, soft blue and white palette, no text."
         },
         "sticker": {
           "title": "Make a sticker",
@@ -288,7 +288,7 @@
             "description": "Cancel the active agent turn for this chat."
           },
           "restart": {
-            "title": "Restart kxbot",
+            "title": "Restart mybot",
             "description": "Restart the bot process in place."
           },
           "status": {

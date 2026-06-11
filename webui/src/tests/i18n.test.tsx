@@ -32,7 +32,7 @@ describe("webui i18n", () => {
     await waitFor(() => {
       expect(document.documentElement.lang).toBe("zh-CN");
     });
-    expect(localStorage.getItem("kxbot.locale")).toBe("zh-CN");
+    expect(localStorage.getItem("mybot.locale")).toBe("zh-CN");
     expect(screen.getByPlaceholderText("输入消息…")).toBeInTheDocument();
   });
 

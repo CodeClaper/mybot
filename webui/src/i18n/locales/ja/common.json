@@ -1,13 +1,13 @@
 {
   "app": {
-    "brand": "kxbot",
+    "brand": "mybot",
     "loading": {
-      "connecting": "kxbot に接続中…",
-      "boot": "kxbot を読み込み中…"
+      "connecting": "mybot に接続中…",
+      "boot": "mybot を読み込み中…"
     },
     "error": {
-      "title": "kxbot に接続できませんでした",
-      "gatewayHint": "gateway（`kxbot gateway`）が起動しており、このページが同じマシン上で開かれていることを確認してください。"
+      "title": "mybot に接続できませんでした",
+      "gatewayHint": "gateway（`mybot gateway`）が起動しており、このページが同じマシン上で開かれていることを確認してください。"
     },
     "login": {
       "title": "ログイン",
@@ -19,19 +19,19 @@
     },
     "system": {
       "section": "システム",
-      "restartHint": "実行時の変更を適用するには kxbot を再起動します。",
-      "restart": "kxbot を再起動",
+      "restartHint": "実行時の変更を適用するには mybot を再起動します。",
+      "restart": "mybot を再起動",
       "restarting": "再起動中..."
     },
     "restart": {
       "completed": "{{seconds}} 秒で再起動が完了しました。"
     },
     "documentTitle": {
-      "base": "kxbot",
-      "chat": "{{title}} · kxbot"
+      "base": "mybot",
+      "chat": "{{title}} · mybot"
     },
     "meta": {
-      "description": "kxbot Web UI — kxbot ワークスペースと会話します。"
+      "description": "mybot Web UI — mybot ワークスペースと会話します。"
     }
   },
   "sidebar": {
@@ -66,14 +66,14 @@
       "language": "言語",
       "provider": "プロバイダー",
       "model": "モデル",
-      "restart": "kxbot を再起動",
+      "restart": "mybot を再起動",
       "configPath": "設定パス"
     },
     "help": {
       "theme": "ライト表示とダーク表示を切り替えます。",
       "language": "WebUI で使用する言語を選択します。",
       "provider": "新しいモデルリクエストに使うプロバイダーを選択します。",
-      "model": "kxbot が既定で使用するモデル名を設定します。",
+      "model": "mybot が既定で使用するモデル名を設定します。",
       "configPath": "現在ゲートウェイが使用している設定ファイルです。"
     },
     "values": {
@@ -85,7 +85,7 @@
       "loading": "設定を読み込んでいます...",
       "loadError": "設定を読み込めませんでした",
       "unsaved": "未保存の変更があります。",
-      "savedRestart": "保存しました。反映するには kxbot を再起動してください。"
+      "savedRestart": "保存しました。反映するには mybot を再起動してください。"
     },
     "actions": {
       "save": "保存",
@@ -188,7 +188,7 @@
       "imageQuickActions": {
         "icon": {
           "title": "アプリアイコンを作る",
-          "prompt": "kxbot のクリーンな 1:1 アプリアイコンを生成してください。親しみやすいロボット、シンプルなベクター風、柔らかい青と白の配色、文字なし。"
+          "prompt": "mybot のクリーンな 1:1 アプリアイコンを生成してください。親しみやすいロボット、シンプルなベクター風、柔らかい青と白の配色、文字なし。"
         },
         "sticker": {
           "title": "ステッカーを作る",
@@ -267,7 +267,7 @@
             "description": "このチャットで実行中の agent ターンをキャンセルします。"
           },
           "restart": {
-            "title": "kxbot を再起動",
+            "title": "mybot を再起動",
             "description": "bot プロセスをその場で再起動します。"
           },
           "status": {
