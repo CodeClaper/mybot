@@ -38,7 +38,7 @@ interface PendingNewChat {
   timer: ReturnType<typeof setTimeout>;
 }
 
-export interface KxbotClientOptions {
+export interface MybotClientOptions {
   url: string;
   reconnect?: boolean;
   /** Called when a connection drops so the app can refresh its token. */
@@ -56,7 +56,7 @@ export interface KxbotClientOptions {
  * ``chat_id``, and this class fans those events out to handlers registered
  * per chat. Reconnects are transparent and re-attach every known chat_id.
  */
-export class KxbotClient {
+export class MybotClient {
   private socket: WebSocket | null = null;
   private statusHandlers = new Set<StatusHandler>();
   private runtimeModelHandlers = new Set<RuntimeModelHandler>();
@@ -80,7 +80,7 @@ export class KxbotClient {
   // and must not schedule a reconnect or flip status back to "reconnecting".
   private intentionallyClosed = false;
 
-  constructor(private options: KxbotClientOptions) {
+  constructor(private options: MybotClientOptions) {
     this.shouldReconnect = options.reconnect ?? true;
     this.maxBackoffMs = options.maxBackoffMs ?? 15_000;
     this.socketFactory =

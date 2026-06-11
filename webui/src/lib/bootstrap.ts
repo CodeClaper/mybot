@@ -79,7 +79,7 @@ export async function fetchBootstrap(
 ): Promise<BootstrapResponse> {
   const headers: Record<string, string> = {};
   if (access_token && refresh_token) {
-    headers["X-Kxbot-Auth"] = refresh_token;
+    headers["X-Mybot-Auth"] = refresh_token;
   }
   const res = await fetch(`${baseUrl}/webui/bootstrap`, {
     method: "GET",

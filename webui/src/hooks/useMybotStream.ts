@@ -39,7 +39,7 @@ export interface SendOptions {
   imageGeneration?: OutboundImageGeneration;
 }
 
-export function useKxbotStream(
+export function useMybotStream(
   chatId: string | null,
   initialMessages: UIMessage[] = [],
   hasPendingToolCalls = false,
