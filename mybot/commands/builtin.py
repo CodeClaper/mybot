@@ -1,6 +1,90 @@
-from mybot import __logo__, __name__
+from dataclasses import dataclass
+from mybot import __logo__, __title__
 from mybot.bus.message import OutboundMessage
 from mybot.commands.router import CommandContext, CommandRouter
+
+@dataclass(frozen=True)
+class BuiltinCommandSpec:
+    command: str
+    title: str
+    description: str
+    icon: str
+    arg_hint: str = ""
+
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "command": self.command,
+            "title": self.title,
+            "description": self.description,
+            "icon": self.icon,
+            "arg_hint": self.arg_hint,
+        }
+
+
+BUILTIN_COMMAND_SPECS: tuple[BuiltinCommandSpec, ...] = (
+    BuiltinCommandSpec(
+        "/new",
+        "New chat",
+        "Stop the current task and start a fresh conversation.",
+        "square-pen",
+    ),
+    BuiltinCommandSpec(
+        "/stop",
+        "Stop current task",
+        "Cancel the active agent turn for this chat.",
+        "square",
+    ),
+    BuiltinCommandSpec(
+        "/restart",
+        "Restart mybot",
+        "Restart the bot process in place.",
+        "rotate-cw",
+    ),
+    BuiltinCommandSpec(
+        "/status",
+        "Show status",
+        "Display runtime, provider, and channel status.",
+        "activity",
+    ),
+    BuiltinCommandSpec(
+        "/model",
+        "Switch model preset",
+        "Show or switch the active model preset.",
+        "brain",
+        "[preset]",
+    ),
+    BuiltinCommandSpec(
+        "/history",
+        "Show conversation history",
+        "Print the last N persisted conversation messages.",
+        "history",
+        "[n]",
+    ),
+    BuiltinCommandSpec(
+        "/dream",
+        "Run Dream",
+        "Manually trigger memory consolidation.",
+        "sparkles",
+    ),
+    BuiltinCommandSpec(
+        "/dream-log",
+        "Show Dream log",
+        "Show what the last Dream consolidation changed.",
+        "book-open",
+    ),
+    BuiltinCommandSpec(
+        "/dream-restore",
+        "Restore memory",
+        "Revert memory to a previous Dream snapshot.",
+        "undo-2",
+    ),
+    BuiltinCommandSpec(
+        "/help",
+        "Show help",
+        "List available slash commands.",
+        "circle-help",
+    ),
+)
 
 
 async def cmd_new(ctx: CommandContext) -> OutboundMessage:
@@ -28,7 +112,7 @@ async def cmd_history(ctx: CommandContext) -> OutboundMessage:
         if conv.get("role") == "user":
             lines.append(f"- **you**: \t{conv.get('content', '')}")
         elif conv.get("role") == "assistant":
-            lines.append(f"- **{__name__}**: \t{conv.get('content', '')}")
+            lines.append(f"- **{__title__}**: \t{conv.get('content', '')}")
 
     return OutboundMessage(
         channel=msg.channel, chat_id=msg.chat_id, 
@@ -64,7 +148,7 @@ def register_builtin_commands(router: CommandRouter) -> None:
 def build_help_text() -> str:
     """Build canonical help text shared across channels."""
     lines = [
-        f"{__logo__} {__name__} commands:",
+        f"{__logo__} {__title__} commands:",
         "/new — Start a new conversation",
         "/stop — Stop the current task",
         "/restart — Restart the bot",
