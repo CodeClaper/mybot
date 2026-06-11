@@ -13,7 +13,7 @@ import { ThreadComposer } from "@/components/thread/ThreadComposer";
 import { ThreadHeader } from "@/components/thread/ThreadHeader";
 import { StreamErrorNotice } from "@/components/thread/StreamErrorNotice";
 import { ThreadViewport } from "@/components/thread/ThreadViewport";
-import { useKxbotStream, type SendImage, type SendOptions } from "@/hooks/useKxbotStream";
+import { useKxbotStream, type SendImage, type SendOptions } from "@/hooks/useMybotStream";
 import { useSessionHistory } from "@/hooks/useSessions";
 import { listSlashCommands } from "@/lib/api";
 import type { ChatSummary, SlashCommand, UIMessage } from "@/lib/types";

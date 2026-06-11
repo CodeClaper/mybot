@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { useKxbotStream } from "@/hooks/useKxbotStream";
+import { useKxbotStream } from "@/hooks/useMybotStream";
 import type { InboundEvent } from "@/lib/types";
 import { ClientProvider } from "@/providers/ClientProvider";
 

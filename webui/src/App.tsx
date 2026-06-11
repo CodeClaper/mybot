@@ -19,7 +19,7 @@ import {
   loadRefreshToken,
   saveTokens,
 } from "@/lib/bootstrap";
-import { KxbotClient } from "@/lib/kxbot-client";
+import { KxbotClient } from "@/lib/mybot-client";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import type { ChatSummary } from "@/lib/types";
 

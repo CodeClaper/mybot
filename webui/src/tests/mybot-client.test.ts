@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { KxbotClient } from "@/lib/kxbot-client";
+import { KxbotClient } from "@/lib/mybot-client";
 
 /**
  * Minimal fake WebSocket implementing the subset KxbotClient touches.
