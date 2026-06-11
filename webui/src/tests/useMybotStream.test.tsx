@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { useKxbotStream } from "@/hooks/useMybotStream";
+import { useMybotStream } from "@/hooks/useMybotStream";
 import type { InboundEvent } from "@/lib/types";
 import { ClientProvider } from "@/providers/ClientProvider";
 
@@ -43,7 +43,7 @@ function wrap(client: ReturnType<typeof fakeClient>["client"]) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <ClientProvider
-        client={client as unknown as import("@/lib/mybot-client").KxbotClient}
+        client={client as unknown as import("@/lib/mybot-client").MybotClient}
         token="tok"
       >
         {children}
@@ -52,7 +52,7 @@ function wrap(client: ReturnType<typeof fakeClient>["client"]) {
   };
 }
 
-describe("useKxbotStream", () => {
+describe("useMybotStream", () => {
   it("starts in streaming mode when history shows pending tool calls", () => {
     const fake = fakeClient();
     const initialMessages = [{
@@ -62,7 +62,7 @@ describe("useKxbotStream", () => {
       createdAt: Date.now(),
     }];
     const { result } = renderHook(
-      () => useKxbotStream("chat-p", initialMessages, true),
+      () => useMybotStream("chat-p", initialMessages, true),
       {
         wrapper: wrap(fake.client),
       },
@@ -73,7 +73,7 @@ describe("useKxbotStream", () => {
 
   it("collapses consecutive tool_hint frames into one trace row", () => {
     const fake = fakeClient();
-    const { result } = renderHook(() => useKxbotStream("chat-t", EMPTY_MESSAGES), {
+    const { result } = renderHook(() => useMybotStream("chat-t", EMPTY_MESSAGES), {
       wrapper: wrap(fake.client),
     });
 
@@ -115,7 +115,7 @@ describe("useKxbotStream", () => {
 
   it("attaches assistant media_urls to complete messages", () => {
     const fake = fakeClient();
-    const { result } = renderHook(() => useKxbotStream("chat-m", EMPTY_MESSAGES), {
+    const { result } = renderHook(() => useMybotStream("chat-m", EMPTY_MESSAGES), {
       wrapper: wrap(fake.client),
     });
 
@@ -136,7 +136,7 @@ describe("useKxbotStream", () => {
 
   it("suppresses redundant stream confirmation after assistant media", () => {
     const fake = fakeClient();
-    const { result } = renderHook(() => useKxbotStream("chat-img-result", EMPTY_MESSAGES), {
+    const { result } = renderHook(() => useMybotStream("chat-img-result", EMPTY_MESSAGES), {
       wrapper: wrap(fake.client),
     });
 
@@ -175,7 +175,7 @@ describe("useKxbotStream", () => {
 
   it("passes image generation options to the websocket client", () => {
     const fake = fakeClient();
-    const { result } = renderHook(() => useKxbotStream("chat-img", EMPTY_MESSAGES), {
+    const { result } = renderHook(() => useMybotStream("chat-img", EMPTY_MESSAGES), {
       wrapper: wrap(fake.client),
     });
 
@@ -197,7 +197,7 @@ describe("useKxbotStream", () => {
 
   it("stops the active turn without adding a user slash command bubble", () => {
     const fake = fakeClient();
-    const { result } = renderHook(() => useKxbotStream("chat-stop", EMPTY_MESSAGES), {
+    const { result } = renderHook(() => useMybotStream("chat-stop", EMPTY_MESSAGES), {
       wrapper: wrap(fake.client),
     });
 
@@ -220,7 +220,7 @@ describe("useKxbotStream", () => {
   it("keeps streaming alive across stream_end and completes on turn_end", () => {
     const fake = fakeClient();
     const onTurnEnd = vi.fn();
-    const { result } = renderHook(() => useKxbotStream("chat-s", EMPTY_MESSAGES, false, onTurnEnd), {
+    const { result } = renderHook(() => useMybotStream("chat-s", EMPTY_MESSAGES, false, onTurnEnd), {
       wrapper: wrap(fake.client),
     });
 
@@ -278,7 +278,7 @@ describe("useKxbotStream", () => {
   it("refreshes session metadata when the server reports a session update", () => {
     const fake = fakeClient();
     const onTurnEnd = vi.fn();
-    renderHook(() => useKxbotStream("chat-title", EMPTY_MESSAGES, false, onTurnEnd), {
+    renderHook(() => useMybotStream("chat-title", EMPTY_MESSAGES, false, onTurnEnd), {
       wrapper: wrap(fake.client),
     });
 

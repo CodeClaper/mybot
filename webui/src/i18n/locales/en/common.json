@@ -113,7 +113,7 @@
       "cancel": "Cancel"
     },
     "byok": {
-      "description": "Bring your own provider keys. Kxbot reads these values from the current config and only configured providers can be selected in General.",
+      "description": "Bring your own provider keys. Mybot reads these values from the current config and only configured providers can be selected in General.",
       "configured": "Configured",
       "notConfigured": "Not configured",
       "configuredSection": "Configured",

@@ -19,7 +19,7 @@ import {
   loadRefreshToken,
   saveTokens,
 } from "@/lib/bootstrap";
-import { KxbotClient } from "@/lib/mybot-client";
+import { MybotClient } from "@/lib/mybot-client";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import type { ChatSummary } from "@/lib/types";
 
@@ -29,7 +29,7 @@ type BootState =
   | { status: "auth"; failed?: boolean }
   | {
       status: "ready";
-      client: KxbotClient;
+      client: MybotClient;
       access_token: string;
       refresh_token: string;
       model_name: string | null;
@@ -66,7 +66,7 @@ export default function App() {
           const boot = await fetchBootstrap("", access_token, refresh_token);
           if (cancelled) return;
           const url = deriveWsUrl2(boot.ws_path, boot.access_token, boot.refresh_token);
-          const client = new KxbotClient({
+          const client = new MybotClient({
             url,
             onReauth: async () => {
               try {
@@ -113,7 +113,7 @@ export default function App() {
           if (boot.access_token && boot.refresh_token) saveTokens(boot.access_token, boot.refresh_token);
           loginCredentialsRef.current = { username, password };
           const url = deriveWsUrl2(boot.ws_path, boot.access_token, boot.refresh_token);
-          const client = new KxbotClient({
+          const client = new MybotClient({
             url,
             onReauth: async () => {
               try {

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Composer } from "@/components/Composer";
 import { MessageList } from "@/components/MessageList";
 import { useClient } from "@/providers/ClientProvider";
-import { useKxbotStream } from "@/hooks/useKxbotStream";
+import { useMybotStream } from "@/hooks/useMybotStream";
 import { useSessionHistory } from "@/hooks/useSessions";
 import type { ChatSummary } from "@/lib/types";
 
@@ -28,7 +28,7 @@ export function ChatPane({ session, onNewChat }: ChatPaneProps) {
   const pendingFirstRef = useRef<string | null>(null);
 
   const initial = useMemo(() => historical, [historical]);
-  const { messages, isStreaming, send, setMessages } = useKxbotStream(
+  const { messages, isStreaming, send, setMessages } = useMybotStream(
     chatId,
     initial,
     hasPendingToolCalls,

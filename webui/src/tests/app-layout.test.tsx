@@ -67,7 +67,7 @@ vi.mock("@/lib/mybot-client", () => {
     updateUrl = vi.fn();
   }
 
-  return { KxbotClient: MockClient };
+  return { MybotClient: MockClient };
 });
 
 import App from "@/App";

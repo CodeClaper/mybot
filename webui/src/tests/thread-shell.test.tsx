@@ -48,7 +48,7 @@ function makeClient() {
 function wrap(client: ReturnType<typeof makeClient>, children: ReactNode) {
   return (
     <ClientProvider
-      client={client as unknown as import("@/lib/mybot-client").KxbotClient}
+      client={client as unknown as import("@/lib/mybot-client").MybotClient}
       token="tok"
     >
       {children}

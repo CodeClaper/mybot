@@ -1,9 +1,9 @@
 import { createContext, useContext, type ReactNode } from "react";
 
-import type { KxbotClient } from "@/lib/mybot-client";
+import type { MybotClient } from "@/lib/mybot-client";
 
 interface ClientContextValue {
-  client: KxbotClient;
+  client: MybotClient;
   token: string;
   modelName: string | null;
 }
@@ -16,7 +16,7 @@ export function ClientProvider({
   modelName = null,
   children,
 }: {
-  client: KxbotClient;
+  client: MybotClient;
   token: string;
   modelName?: string | null;
   children: ReactNode;
