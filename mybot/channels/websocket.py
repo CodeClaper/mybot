@@ -30,7 +30,6 @@ from websockets.http11 import Response
 from urllib.parse import parse_qs, unquote, urlparse
 
 from mybot.context.session import SessionManager
-from mybot.utils.auth import AuthManager
 from mybot.utils.helper import safe_filename
 from mybot.utils.media_decode import FileSizeExceeded, save_base64_data_url
 
@@ -118,7 +117,6 @@ class WebSocketChannel(BaseChannel):
     ):
         super().__init__(config, bus)
         self.config: WebSocketConfig = config.channels.websocket
-        self._auth: AuthManager = AuthManager(config)
         self._conn_default: dict[Any, str] = {}
         self._subs: dict[str, set[Any]] = {}
         self._conn_chats: dict[Any, set[str]] = {}
@@ -627,16 +625,8 @@ class WebSocketChannel(BaseChannel):
         password = self._query_first(query, "password")
         if not username or not password:
             return self._http_error(401, "Unauthorized")
-
-        ret = await self._auth.login(username=username, password=password)
-        if not ret:
-            return self._http_error(401, "Unauthorized")
-        access_token = ret.get("access_token", "")
-        self.set_token(access_token)
         return self._http_json_response(
             {
-                "access_token": access_token,
-                "refresh_token": ret.get("refresh_token"),
                 "ws_path": self._expected_path(),
                 "model_name": self._read_webui_model_name(),
             }
@@ -646,23 +636,14 @@ class WebSocketChannel(BaseChannel):
         token = request.headers.get("x-mybot-auth")
         if not token:
             return self._http_error(401, "Unauthorized")
-        ret = await self._auth.refresh_token(token)
-        if not ret:
-            return self._http_error(401, "Unauthorized")
-        access_token = ret.get("access_token", "")
-        self.set_token(access_token)
         return self._http_json_response(
             {
-                "access_token": access_token,
-                "refresh_token": ret.get("refresh_token"),
                 "ws_path": self._expected_path(),
                 "model_name": self._read_webui_model_name(),
             }
         )
 
     async def _handle_sessions_list(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         if self._session_manager is None:
             return self._http_error(503, "session manager unavailable")
         sessions = self._session_manager.list_sessions()
@@ -678,18 +659,12 @@ class WebSocketChannel(BaseChannel):
         return self._http_json_response({"sessions": cleaned})
 
     async def _handle_settings(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         return self._http_json_response(self._settings_payload())
     
     async def _handle_commands(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         return self._http_json_response({"commands": self.builtin_command_palette()})
 
     async def _handle_settings_update(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         from mybot.config.loader import load_config, save_config
         from mybot.providers.registry import find_by_name
 
@@ -729,8 +704,6 @@ class WebSocketChannel(BaseChannel):
 
 
     async def _handle_settings_provider_update(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         from mybot.config.loader import load_config, save_config
         from mybot.providers.registry import find_by_name
 
@@ -772,8 +745,6 @@ class WebSocketChannel(BaseChannel):
         return self._http_json_response(self._settings_payload(requires_restart=False))
 
     async def _handle_settings_web_search_update(self, request: WsRequest) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         from mybot.config.loader import load_config, save_config
 
         query = self._parse_query(request.path)
@@ -824,8 +795,6 @@ class WebSocketChannel(BaseChannel):
         return self._http_json_response(self._settings_payload(requires_restart=False))
 
     async def _handle_session_messages(self, request: WsRequest, key: str) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         if self._session_manager is None:
             return self._http_error(503, "session manager unavailable")
         decoded_key = self._decode_api_key(key)
@@ -847,8 +816,6 @@ class WebSocketChannel(BaseChannel):
         return self._http_json_response(data)
 
     async def _handle_session_delete(self, request: WsRequest, key: str) -> Response:
-        if not await self._check_api_token(request):
-            return self._http_error(401, "Unauthorized")
         if self._session_manager is None:
             return self._http_error(503, "session manager unavailable")
         decoded_key = self._decode_api_key(key)
@@ -995,13 +962,6 @@ class WebSocketChannel(BaseChannel):
         for token_key, expiry in list(self._issued_tokens.items()):
             if now > expiry:
                 self._issued_tokens.pop(token_key, None)
-
-    async def _check_api_token(self, request: WsRequest) -> bool:
-        """Validate a request against the API token pool (multi-use, TTL-bound)."""
-        access_token = request.headers.get("Authorization")
-        if not access_token: 
-            return False
-        return await self._auth.check_access_token(access_token)
 
     def _purge_expired_api_tokens(self) -> None:
         now = time.monotonic()

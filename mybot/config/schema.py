@@ -10,19 +10,10 @@ class Base(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class ServiceConfig(Base):
-    """Service default configuration."""
-    protol: str = "http"
-    ip: str = "127.0.0.1"
-    md5solot:str = "loushang:secret"
-    salt: str = "1#2$3%4(5)6@7!poeeww$3%4(5)djjkkldss"
-    node: str = "connector"
-
-
 class AgentDefaults(Base):
     """Agent default configuration."""
     model_preset: str | None = None  # Active preset name — takes precedence over fields below
-    model: str = "deepseek/deepseek-chat"
+    model: str = "deepseek-v4-pro"
     provider: str = "deepseek"  # Provider name (e.g. "anthropic", "openrouter") or "auto" for auto-detection
     max_tokens: int = 8192
     context_window_tokens: int = 65_536
@@ -158,7 +149,6 @@ class ModelPresetConfig(Base):
 class Config(BaseSettings):
     """Root configuration."""
     
-    service: ServiceConfig = Field(default_factory=ServiceConfig)
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     channels: ChannelsConfig = Field(default_factory=ChannelsConfig)
     gateway: GatewayConfig = Field(default_factory=GatewayConfig)
