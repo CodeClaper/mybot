@@ -20,7 +20,7 @@ from mybot.bus.message import OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
 from mybot.commands.builtin import BUILTIN_COMMAND_SPECS
-from mybot.config.path import get_media_dir
+from mybot.config.path import get_media_dir, get_worksapce_path
 from mybot.config.schema import Config, WebSocketConfig
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.datastructures import Headers
@@ -126,7 +126,7 @@ class WebSocketChannel(BaseChannel):
         self._server_task: asyncio.Task[None] | None = None
         self._issued_tokens: dict[str, float] = {}
         self._api_tokens: dict[str, float] = {}
-        self._session_manager = session_manager
+        self._session_manager = session_manager or SessionManager(workspace=get_worksapce_path())
         self._media_secret: bytes = secrets.token_bytes(32)
         self._static_dist_path: Path | None = (
             static_dist_path.resolve() if static_dist_path is not None else None
@@ -644,8 +644,13 @@ class WebSocketChannel(BaseChannel):
         token = request.headers.get("x-mybot-auth")
         if not token:
             return self._http_error(401, "Unauthorized")
+        result = self._auth.verify_access_token(token)
+        logger.debug(result)
+        if not result:
+            return self._http_error(401, "Unauthorized")
         return self._http_json_response(
             {
+                "access_token": token,
                 "ws_path": self._expected_path(),
                 "model_name": self._read_webui_model_name(),
             }
