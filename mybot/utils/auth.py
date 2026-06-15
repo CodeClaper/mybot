@@ -26,7 +26,7 @@ class AuthManager:
         self._secret = secret
         self._access_token_ttl = access_token_ttl
         self._refresh_token_ttl = refresh_token_ttl
-        self._users = users or {"username": "superadmin", "password": '123456'}
+        self._users = users or {"superadmin": "123456"}
         # refresh_token_value -> {username, expires_at}
         self._refresh_tokens: dict[str, dict[str, object]] = {}
 
@@ -99,13 +99,13 @@ class AuthManager:
         }
         access_token = self._encode_jwt(access_payload)
 
-        refresh_value = secrets.token_urlsafe(32)
-        self._refresh_tokens[refresh_value] = {
+        refresh_token = secrets.token_urlsafe(32)
+        self._refresh_tokens[refresh_token] = {
             "username": username,
             "expires_at": now + self._refresh_token_ttl,
         }
 
-        return access_token, refresh_value
+        return access_token, refresh_token
 
     def verify_access_token(self, token: str) -> dict[str, object] | None:
         """Verify an access token and return its payload, or ``None`` if

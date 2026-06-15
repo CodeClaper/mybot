@@ -30,6 +30,7 @@ from websockets.http11 import Response
 from urllib.parse import parse_qs, unquote, urlparse
 
 from mybot.context.session import SessionManager
+from mybot.utils.auth import AuthManager
 from mybot.utils.helper import safe_filename
 from mybot.utils.media_decode import FileSizeExceeded, save_base64_data_url
 
@@ -119,6 +120,7 @@ class WebSocketChannel(BaseChannel):
         self.config: WebSocketConfig = config.channels.websocket
         self._conn_default: dict[Any, str] = {}
         self._subs: dict[str, set[Any]] = {}
+        self._auth: AuthManager = AuthManager()
         self._conn_chats: dict[Any, set[str]] = {}
         self._stop_event: asyncio.Event | None = None
         self._server_task: asyncio.Task[None] | None = None
@@ -625,8 +627,14 @@ class WebSocketChannel(BaseChannel):
         password = self._query_first(query, "password")
         if not username or not password:
             return self._http_error(401, "Unauthorized")
+        result = self._auth.issue_token(username=username, password=password)
+        if not result:
+            return self._http_error(401, "Unauthorized")
+        access_token, refresh_token = result
         return self._http_json_response(
             {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
                 "ws_path": self._expected_path(),
                 "model_name": self._read_webui_model_name(),
             }
