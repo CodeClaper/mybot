@@ -308,19 +308,19 @@ def _print_agent_response(
 def _make_provider(config: Config) -> BaseProvider:
     """Create the appropriate LLM provider by config. """
 
-    model = config.agents.defaults.model
-    provider = config.get_provider(model)
-    provider_name = config.get_provider_name(model)
-    if model == "local":
+    model_name = config.agents.defaults.model
+    provider_name = config.agents.defaults.provider
+    provider = config.get_provider(provider_name)
+    if provider_name == "local":
         return LocalProvider()
-    elif provider_name == "deepseek":
+    elif provider_name == "deepseek" or "deepseek" in provider_name:
         return DeepSeekProvider(
             api_key=provider.api_key if provider else None,
             api_base=provider.api_base if provider else None,
         )
     else:
         return DefaultProvider(
-            default_model=model,
+            default_model=model_name,
             api_key=provider.api_key if provider else None,
             api_base=provider.api_base if provider else None
         )

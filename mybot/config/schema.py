@@ -160,28 +160,20 @@ class Config(BaseSettings):
     )
 
     def _match_provider(
-        self, model: str | None
+        self, provider_name: str | None
     ) -> tuple[ProviderConfig | None, str | None]:
         from mybot.providers.registry import PROVIDERS
-
-        model_lower = (model or self.agents.defaults.model).lower()
-        model_prefix = model_lower.split("/", 1)[0] if "/" in model_lower else ""
-
+        provider_lower = (provider_name or self.agents.defaults.provider).lower()
         for spec in PROVIDERS:
             p = getattr(self.providers, spec.name, None)
-            if p and model_prefix and model_prefix == spec.name:
+            if p and provider_lower and provider_lower == spec.name:
                 return p, spec.name
         return None, None
 
-    def get_provider(self, model: str | None) -> ProviderConfig | None:
+    def get_provider(self, provider_name: str | None) -> ProviderConfig | None:
         """Get approciate provider by model. """
-        provider, _ = self._match_provider(model)
+        provider, _ = self._match_provider(provider_name)
         return provider
-
-    def get_provider_name(self, model: str | None) -> str | None:
-        """Get approciate provider name by model. """
-        _, name = self._match_provider(model)
-        return name
 
     def resolve_default_preset(self) -> ModelPresetConfig:
         """Return the implicit `default` preset from agents.defaults fields."""
