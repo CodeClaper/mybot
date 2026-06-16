@@ -90,7 +90,7 @@ export async function fetchBootstrap(
     throw new Error(`bootstrap failed: HTTP ${res.status}`);
   }
   const body = (await res.json()) as BootstrapResponse;
-  if (!body.access_token || !body.refresh_token || !body.ws_path) {
+  if (!body.access_token || !body.ws_path) {
     throw new Error("login response missing access_token or refresh_token or ws_path");
   }
   return body;

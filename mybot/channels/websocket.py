@@ -645,7 +645,6 @@ class WebSocketChannel(BaseChannel):
         if not token:
             return self._http_error(401, "Unauthorized")
         result = self._auth.verify_access_token(token)
-        logger.debug(result)
         if not result:
             return self._http_error(401, "Unauthorized")
         return self._http_json_response(
@@ -891,11 +890,12 @@ class WebSocketChannel(BaseChannel):
         )
 
     def _authorize_websocket_handshake(self, connection: Any, query: dict[str, list[str]]) -> Any:
-        access_token = self._query_first(query, "access_token")
-        refresh_token = self._query_first(query, "refresh_token")
-        if not access_token or not refresh_token:
+        access_token = self._query_first(query, "token")
+        if not access_token:
             return connection.respond(401, "Unauthorized")
-
+        result = self._auth.verify_access_token(access_token)
+        if not result:
+            return connection.respond(401, "Unauthorized")
         return None
 
     def _http_response(

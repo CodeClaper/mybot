@@ -12,6 +12,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
 import {
   clearSavedSecret,
+  deriveWsUrl,
   deriveWsUrl2,
   fetchBootstrap,
   fetchLogin,
@@ -65,13 +66,13 @@ export default function App() {
         try {
           const boot = await fetchBootstrap("", access_token, refresh_token);
           if (cancelled) return;
-          const url = deriveWsUrl2(boot.ws_path, boot.access_token, boot.refresh_token);
+          const url = deriveWsUrl(boot.ws_path, boot.access_token );
           const client = new MybotClient({
             url,
             onReauth: async () => {
               try {
                 const refreshed = await fetchBootstrap("", access_token, refresh_token);
-                return deriveWsUrl2(refreshed.ws_path, refreshed.access_token, refreshed.refresh_token);
+                return deriveWsUrl(refreshed.ws_path, refreshed.access_token);
               } catch {
                 return null;
               }
