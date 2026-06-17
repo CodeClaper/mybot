@@ -88,9 +88,6 @@ class ChannelManager:
 
     async def _dispatch_outbound(self) -> None:
         """Dispatch outboud message to the appropriate channel."""
-
-        logger.info("Outbound dispatcher started.")
-        
         while True:
             try:
                 msg = await asyncio.wait_for(self.bus.consume_outbound(), timeout=1.0)
