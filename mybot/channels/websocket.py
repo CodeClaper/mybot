@@ -20,7 +20,7 @@ from mybot.bus.message import OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
 from mybot.commands.builtin import BUILTIN_COMMAND_SPECS
-from mybot.config.path import get_media_dir, get_worksapce_path
+from mybot.config.path import get_home_path, get_media_dir, get_worksapce_path
 from mybot.config.schema import Config, WebSocketConfig
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.datastructures import Headers
@@ -126,7 +126,7 @@ class WebSocketChannel(BaseChannel):
         self._server_task: asyncio.Task[None] | None = None
         self._issued_tokens: dict[str, float] = {}
         self._api_tokens: dict[str, float] = {}
-        self._session_manager = session_manager or SessionManager(workspace=get_worksapce_path())
+        self._session_manager = session_manager or SessionManager(workspace=get_home_path())
         self._media_secret: bytes = secrets.token_bytes(32)
         self._static_dist_path: Path | None = (
             static_dist_path.resolve() if static_dist_path is not None else None

@@ -22,7 +22,7 @@ from mybot.bus.queue import MessageBus
 from mybot.channels.manager import ChannelManager
 from mybot.channels.registry import discover_all
 from mybot.config.loader import load_config, save_config
-from mybot.config.path import get_config_path, get_history_path, get_worksapce_path
+from mybot.config.path import get_config_path, get_history_path, get_home_path, get_worksapce_path
 from mybot.config.question import question_config
 from mybot.config.schema import Config
 from mybot.context.session import SessionManager
@@ -89,10 +89,10 @@ def agent(
     bus = MessageBus()
     config = load_config()
     agent = AgentLoop(
-        provider= _make_provider(config), 
-        workspace=_workspace_path(),
+        provider=_make_provider(config), 
+        workspace=get_home_path(),
         bus=bus,
-        session_manager=SessionManager(_workspace_path()),
+        session_manager=SessionManager(get_home_path()),
         config=config
     )
 
@@ -194,11 +194,11 @@ def gateway(
     
     bus = MessageBus()
     provider = _make_provider(config)
-    session_manager=SessionManager(_workspace_path())
+    session_manager=SessionManager(get_home_path())
 
     agent = AgentLoop(
         provider= provider, 
-        workspace=_workspace_path(),
+        workspace=get_home_path(),
         bus=bus,
         session_manager=session_manager,
         config=config
@@ -261,9 +261,6 @@ def _init_prompt_session() -> None:
         enable_open_in_editor=False,
         multiline=False
     )
-
-def _workspace_path() -> Path:
-    return Path("~/.mybot").expanduser()
 
 async def _read_interactive_input_async() -> str:
     if _PROMPT_SESSION is None:

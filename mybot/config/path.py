@@ -12,6 +12,10 @@ def ensure_file(path: Path) -> Path:
     path.touch(exist_ok=True)
     return path
 
+def get_home_path() -> Path:
+    """Get mybot home path."""
+    return Path.home() / ".mybot" 
+
 def get_config_path() -> Path:
     """Get the default configuration file path."""
     return Path.home() / ".mybot" / "config.json"
@@ -25,7 +29,8 @@ def get_history_path() -> Path:
     return Path.home() / ".mybot" / "history"
 
 def get_data_path() -> Path:
-    return Path.home() / ".mybot" / "workspace" / "data"
+    """Get data path."""
+    return Path.home() / ".mybot" / "data"
 
 def get_runtime_subdir(name: str) -> Path:
     """Return a named rutime sub directory under the data dir. """
