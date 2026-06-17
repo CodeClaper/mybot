@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import {
   clearSavedSecret,
   deriveWsUrl,
-  deriveWsUrl2,
   fetchBootstrap,
   fetchLogin,
   loadAccessToken,
@@ -113,7 +112,7 @@ export default function App() {
           if (cancelled) return;
           if (boot.access_token && boot.refresh_token) saveTokens(boot.access_token, boot.refresh_token);
           loginCredentialsRef.current = { username, password };
-          const url = deriveWsUrl2(boot.ws_path, boot.access_token, boot.refresh_token);
+          const url = deriveWsUrl(boot.ws_path, boot.access_token);
           const client = new MybotClient({
             url,
             onReauth: async () => {
@@ -121,7 +120,7 @@ export default function App() {
                 const creds = loginCredentialsRef.current;
                 if (!creds) return null;
                 const refreshed = await fetchLogin("", creds.username, creds.password);
-                return deriveWsUrl2(refreshed.ws_path, refreshed.access_token, refreshed.refresh_token);
+                return deriveWsUrl(refreshed.ws_path, refreshed.access_token);
               } catch {
                 return null;
               }
