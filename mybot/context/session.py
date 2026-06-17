@@ -177,13 +177,14 @@ class SessionManager:
     def save(self, session: Session) -> None:
         """Save a session to disk."""
         path = self._get_session_path(session.key)
+        title = self._get_metadata_title(session)
         with open(path, "w", encoding="utf-8") as f:
             metadata_line = {
                 "_type": "metadata",
                 "key": session.key,
                 "created_at": session.created_at.isoformat(),
                 "updated_at": session.updated_at.isoformat(),
-                "metadata": session.metadata
+                "metadata": { "title": title }
             }
             f.write(json.dumps(metadata_line, ensure_ascii=False) + "\n")
             for msg in session.messages:
@@ -365,3 +366,10 @@ class SessionManager:
                 return self._session_payload(repaired)
             return None
 
+    def _get_metadata_title(self, session: Session) -> str | None: 
+        if  not session.messages:
+            return None
+        for msg in session.messages:
+            if msg["role"] == "user":
+                return str(msg["content"])
+        return None
