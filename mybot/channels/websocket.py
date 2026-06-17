@@ -20,7 +20,7 @@ from mybot.bus.message import OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.channels.base import BaseChannel
 from mybot.commands.builtin import BUILTIN_COMMAND_SPECS
-from mybot.config.path import get_home_path, get_media_dir, get_worksapce_path
+from mybot.config.path import get_home_path, get_media_dir
 from mybot.config.schema import Config, WebSocketConfig
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.datastructures import Headers
@@ -1014,7 +1014,7 @@ class WebSocketChannel(BaseChannel):
 
         config = load_config()
         defaults = config.agents.defaults
-        provider_name = config.get_provider_name(defaults.model) or defaults.provider
+        provider_name = defaults.provider
         provider = config.get_provider(defaults.model)
         selected_provider = provider_name
         if defaults.provider != "auto":
