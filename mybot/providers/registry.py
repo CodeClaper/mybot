@@ -31,6 +31,13 @@ PROVIDERS: tuple[ProviderSpec, ...] = (
         litellm_prefix="deepseek",  # deepseek-chat -> deepseek/deepseek-chat
     ),
     ProviderSpec(
+        name="minimax",
+        keywords=("minimax", "m3", "m2"),
+        env_key="MINIMAX_API_KEY",
+        display_name="MiniMax",
+        litellm_prefix="minimax",
+    ),
+    ProviderSpec(
         name="moonshot",
         keywords=("deepseek", "kimi"),
         env_key="MOONSHOT_API_KEY",

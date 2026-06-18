@@ -29,6 +29,7 @@ from mybot.context.session import SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.providers.deepseek_provider import DeepSeekProvider
 from mybot.providers.local_provider import LocalProvider
+from mybot.providers.minimax_provider import MinimaxProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
 console = Console()
@@ -311,6 +312,11 @@ def _make_provider(config: Config) -> BaseProvider:
         return LocalProvider()
     elif provider_name == "deepseek" or "deepseek" in provider_name:
         return DeepSeekProvider(
+            api_key=provider.api_key if provider else None,
+            api_base=provider.api_base if provider else None,
+        )
+    elif provider_name == "minimax":
+        return MinimaxProvider(
             api_key=provider.api_key if provider else None,
             api_base=provider.api_base if provider else None,
         )
