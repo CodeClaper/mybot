@@ -547,7 +547,9 @@ class WebSocketChannel(BaseChannel):
         if got == "/webui/bootstrap":
             return await self._handle_webui_bootstrap(request)
 
-        # 3. REST surface for the embedded UI.
+        if got == "/api/refresh":
+            return await self._handle_refresh_token(request)
+
         if got == "/api/sessions":
             return await self._handle_sessions_list(request)
 
@@ -655,6 +657,24 @@ class WebSocketChannel(BaseChannel):
             }
         )
 
+    async def _handle_refresh_token(self, request: WsRequest) -> Response:
+        """Refresh token. """
+        query = self._parse_query(request.path)
+        refresh_token = self._query_first(query, "refresh_token")
+        if not refresh_token:
+            return self._http_error(401, "Unauthorized")
+        result = self._auth.refresh(refresh_token=refresh_token)
+        if not result:
+            return self._http_error(401, "Unauthorized")
+        access_token, refresh_token = result
+        return self._http_json_response(
+            {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "ws_path": self._expected_path(),
+                "model_name": self._read_webui_model_name(),
+            }
+        )
     async def _handle_sessions_list(self, request: WsRequest) -> Response:
         if self._session_manager is None:
             return self._http_error(503, "session manager unavailable")

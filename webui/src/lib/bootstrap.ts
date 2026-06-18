@@ -97,6 +97,29 @@ export async function fetchBootstrap(
 }
 
 /**
+ * Refresh tokens via ``/api/refresh``. Returns new tokens on success,
+ * or throws on failure (including 401/403).
+ */
+export async function fetchRefresh(
+  baseUrl: string = "",
+  refresh_token: string,
+): Promise<BootstrapResponse> {
+  const params = new URLSearchParams({ refresh_token });
+  const res = await fetch(`${baseUrl}/api/refresh?${params}`, {
+    method: "GET",
+    credentials: "same-origin",
+  });
+  if (!res.ok) {
+    throw new Error(`token refresh failed: HTTP ${res.status}`);
+  }
+  const body = (await res.json()) as BootstrapResponse;
+  if (!body.access_token || !body.refresh_token || !body.ws_path) {
+    throw new Error("refresh response missing access_token or refresh_token or ws_path");
+  }
+  return body;
+}
+
+/**
  * Authenticate with username/password via ``/api/login`` and return a
  * bootstrap-style response with a short-lived token + WebSocket path.
  */

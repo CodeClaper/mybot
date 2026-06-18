@@ -15,6 +15,7 @@ import {
   deriveWsUrl,
   fetchBootstrap,
   fetchLogin,
+  fetchRefresh,
   loadAccessToken,
   loadRefreshToken,
   saveTokens,
@@ -89,7 +90,35 @@ export default function App() {
           if (cancelled) return;
           const msg = (e as Error).message;
           if (msg.includes("HTTP 401") || msg.includes("HTTP 403")) {
-            setState({ status: "auth", failed: true });
+            try {
+              const refreshed = await fetchRefresh("", refresh_token);
+              if (cancelled) return;
+              saveTokens(refreshed.access_token, refreshed.refresh_token);
+              const url = deriveWsUrl(refreshed.ws_path, refreshed.access_token);
+              const client = new MybotClient({
+                url,
+                onReauth: async () => {
+                  try {
+                    const reRefreshed = await fetchRefresh("", refreshed.refresh_token);
+                    saveTokens(reRefreshed.access_token, reRefreshed.refresh_token);
+                    return deriveWsUrl(reRefreshed.ws_path, reRefreshed.access_token);
+                  } catch {
+                    return null;
+                  }
+                },
+              });
+              client.connect();
+              setState({
+                status: "ready",
+                client,
+                access_token: refreshed.access_token,
+                refresh_token: refreshed.refresh_token,
+                model_name: refreshed.model_name ?? null,
+              });
+            } catch {
+              if (cancelled) return;
+              setState({ status: "auth", failed: true });
+            }
           } else {
             setState({ status: "error", message: msg });
           }

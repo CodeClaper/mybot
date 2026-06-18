@@ -52,18 +52,15 @@ export function Sidebar(props: SidebarProps) {
     >
       <div className="flex items-center justify-between px-3 pb-2.5 pt-3">
         <div className="flex items-center min-w-0">
-          <picture className="block shrink-0">
-            <source srcSet="/brand/logo.svg" type="image/svg+xml" />
-            <img
-              src="/brand/logo.png"
-              alt="mybot"
-              className="h-6 w-auto select-none object-contain opacity-95"
-              draggable={false}
-            />
-          </picture>
-          <span className="ml-2 text-[13px] font-medium text-sidebar-foreground truncate">
-            可信数据空间智能助手
-          </span>
+        <picture className="block min-w-0">
+          <source srcSet="/brand/mybot_logo.webp" type="image/webp" />
+          <img
+            src="/brand/mybot_logo.png"
+            alt="nanobot"
+            className="h-6 w-auto select-none object-contain opacity-95"
+            draggable={false}
+          />
+        </picture>
         </div>
         <Button
           variant="ghost"
