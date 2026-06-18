@@ -28,7 +28,6 @@ from mybot.config.schema import Config
 from mybot.context.session import SessionManager
 from mybot.providers.base import BaseProvider
 from mybot.providers.deepseek_provider import DeepSeekProvider
-from mybot.providers.default_provider import DefaultProvider
 from mybot.providers.local_provider import LocalProvider
 
 app = typer.Typer(name="mybot", help=f"mybot - Personal AI Assistant.", no_args_is_help=True)
@@ -316,8 +315,4 @@ def _make_provider(config: Config) -> BaseProvider:
             api_base=provider.api_base if provider else None,
         )
     else:
-        return DefaultProvider(
-            default_model=model_name,
-            api_key=provider.api_key if provider else None,
-            api_base=provider.api_base if provider else None
-        )
+        raise RuntimeError(f"Not support provider: {provider_name}")
