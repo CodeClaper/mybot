@@ -191,7 +191,7 @@ class AgentLoop:
                     reasoning_content=response.reasoning_content,
                     thinking_blocks=response.thinking_blocks,
                 )
-                final_content = response.content
+                final_content = clean
                 break
         if final_content is None and iteration >= self.max_iterations:
             logger.warning("Max iteration ({}) reached.", self.max_iterations)
