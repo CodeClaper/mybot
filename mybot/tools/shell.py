@@ -107,7 +107,9 @@ class ShellTool(Tool):
             
             max_len = 10000
             if len(result) > max_len:
-                result = result[:max_len] + f"\n...(truncated, {len(result) - max_len} more character."
+                half = max_len // 2
+                omitted = len(result) - max_len
+                result = result[:half] + f"\n...(truncated, {omitted} characters omitted)...\n" + result[-half:]
 
             return result
 
