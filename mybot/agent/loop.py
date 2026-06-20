@@ -53,7 +53,7 @@ class AgentLoop:
         self.session_manager = session_manager or SessionManager(self.workspace)
         self.config = config
         self.context = ContextBuilder(workspace)
-        self.tool_registry = TooRegistry()
+        self.tools = TooRegistry()
         self._register_defaul_tools()
         self.commands = CommandRouter()
         register_builtin_commands(self.commands)
@@ -81,12 +81,12 @@ class AgentLoop:
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
         skills_dir = workspace / "skills"
-        self.tool_registry.register(ShellTool())
-        self.tool_registry.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
-        self.tool_registry.register(WebFetchTool(proxy=web_config.proxy))
-        self.tool_registry.register(MessageTool(send_callback=self.bus.publish_outbound))
-        self.tool_registry.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
-        self.tool_registry.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
+        self.tools.register(ShellTool())
+        self.tools.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
+        self.tools.register(WebFetchTool(proxy=web_config.proxy))
+        self.tools.register(MessageTool(send_callback=self.bus.publish_outbound))
+        self.tools.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
+        self.tools.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
 
     async def _dispatch(self, msg: InboundMessage) -> None:
         """Dispath the message."""
@@ -150,7 +150,7 @@ class AgentLoop:
             
             response = await self.provider.chat(
                 messages=messages,
-                tools=self.tool_registry.get_definations(),
+                tools=self.tools.get_definations(),
                 model=self._get_model_name(),
                 temperature=self._get_temperature()
             )
@@ -180,7 +180,7 @@ class AgentLoop:
                     thinking_blocks=response.thinking_blocks
                 )
                 for tool_call in response.tool_calls:
-                    result = await self.tool_registry.execute(tool_call.name, tool_call.arguments)
+                    result = await self.tools.execute(tool_call.name, tool_call.arguments)
                     messages = self._add_tool_result(messages, tool_call.id, tool_call.name, result)
             else:
                 clean = self._strip_think(response.content)
