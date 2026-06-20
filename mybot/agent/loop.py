@@ -7,6 +7,7 @@ from typing import Any, Awaitable, Callable
 from loguru import logger
 
 from mybot.agent.skill import BUILTIN_SKILL_DIR
+from mybot.agent.subagent import SubagentManager
 from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.commands.builtin import register_builtin_commands
@@ -21,6 +22,7 @@ from mybot.tools.filesystem import ReadFileTool, WriteFileTool
 from mybot.tools.message import MessageTool
 from mybot.tools.registry import TooRegistry
 from mybot.tools.shell import ShellTool
+from mybot.tools.spawn import SpawnTool
 from mybot.tools.web import WebFetchTool, WebSearchTool
 from mybot.utils.helper import strip_think
 
@@ -54,6 +56,13 @@ class AgentLoop:
         self.config = config
         self.context = ContextBuilder(workspace)
         self.tools = TooRegistry()
+        self.subagents = SubagentManager(
+            provider=provider,
+            workspace=workspace,
+            bus=bus,
+            config=config,
+            model=self._get_model_name()
+        )
         self._register_defaul_tools()
         self.commands = CommandRouter()
         register_builtin_commands(self.commands)
@@ -87,6 +96,7 @@ class AgentLoop:
         self.tools.register(MessageTool(send_callback=self.bus.publish_outbound))
         self.tools.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
         self.tools.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
+        self.tools.register(SpawnTool(manager=self.subagents))
 
     async def _dispatch(self, msg: InboundMessage) -> None:
         """Dispath the message."""
