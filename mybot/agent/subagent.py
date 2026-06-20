@@ -22,6 +22,12 @@ from mybot.tools.web import WebFetchTool, WebSearchTool
 
 MAX_CONCURRENT_SUBAGENTS = 2
 
+TOOL_PROFILES = {
+    "general":  ["shell", "web_search", "web_fetch", "message", "read_file", "write_file"],
+    "code":     ["shell", "read_file", "write_file"],
+    "research": ["web_search", "web_fetch", "read_file"],
+}
+
 class SubagentManager:
     """Manages background subagent execution."""
 
@@ -53,14 +59,15 @@ class SubagentManager:
         label: str | None = None,
         origin_channel: str = "cli",
         origin_chat_id: str = "direct",
-        session_key: str | None = None
+        session_key: str | None = None,
+        tool_profile: str = "general",
     ) -> str:
         """Spawn a subagent to execute a task in the background. """
         task_id = str(uuid.uuid4())[:8]
         display_label = label or task[:30] + ("..." if (len(task) > 30) else "")
         origin = {"channel": origin_channel, "chat_id": origin_chat_id, "session_key": session_key}
         bg_task = asyncio.create_task(
-            self._run_subagent(task_id, task, display_label, origin)
+            self._run_subagent(task_id, task, display_label, origin, tool_profile)
         )
         self.running_tasks[task_id] = bg_task
         if session_key:
@@ -83,13 +90,14 @@ class SubagentManager:
         task_id: str,
         task: str,
         label: str,
-        origin: dict[str, str]
+        origin: dict[str, str],
+        tool_profile: str = "general",
     ) -> None:
         """Execute the subagent task and announce the result."""
         logger.info("Subagent [{}] starting task: {}", task_id, label)
         try:
             tools = TooRegistry()
-            self._register_defaul_tools(tools=tools)
+            self._register_tools(tools, profile=tool_profile)
             system_prompt = self._build_subagent_prompt()
             messages: list[dict[str, Any]] = [
                 {"role": "system", "content": system_prompt},
@@ -156,19 +164,33 @@ class SubagentManager:
             logger.error("Subagent [{}] failed: {}", task_id, e)
             await self._announce_result(task_id, label, task, error_msg, origin, "error")
 
-    def _register_defaul_tools(self, tools) -> None:
-        """Register default tools."""
+    def _register_tools(self, tools, profile: str = "general") -> None:
+        """Register tools based on tool profile."""
+        if profile not in TOOL_PROFILES:
+            logger.warning("Unknown tool profile '{}', falling back to 'general'", profile)
+            profile = "general"
+
         web_config = self.config.tools.web
         workspace = get_worksapce_path()
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
         skills_dir = workspace / "skills"
-        tools.register(ShellTool())
-        tools.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
-        tools.register(WebFetchTool(proxy=web_config.proxy))
-        tools.register(MessageTool(send_callback=self.bus.publish_outbound))
-        tools.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
-        tools.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
+
+        tool_factories = {
+            "shell": lambda: ShellTool(),
+            "web_search": lambda: WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key),
+            "web_fetch": lambda: WebFetchTool(proxy=web_config.proxy),
+            "message": lambda: MessageTool(send_callback=self.bus.publish_outbound),
+            "read_file": lambda: ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states),
+            "write_file": lambda: WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states),
+        }
+
+        for tool_name in TOOL_PROFILES[profile]:
+            factory = tool_factories.get(tool_name)
+            if factory:
+                tools.register(factory())
+            else:
+                logger.warning("Unknown tool '{}' in profile '{}'", tool_name, profile)
 
 
     def get_running_count(self) -> int:

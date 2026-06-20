@@ -34,11 +34,16 @@ class SpawnTool(Tool):
             "properties": {
                 "task": {"type": "string", "description": "The task for the subagent to complete"},
                 "label": {"type": "string", "description": "Optional short label for the task (for display)"},
+                "tool_profile": {
+                    "type": "string",
+                    "enum": ["general", "code", "research"],
+                    "description": "Tool profile for the subagent: 'general' (all tools), 'code' (shell + file read/write - for development tasks), 'research' (web search/fetch + file read - for information gathering). Default: 'general'."
+                },
             },
             "required": ["task"]
         }
 
-    async def execute(self, task: str, label: str | None = None, **kwargs: Any) -> str:
+    async def execute(self, task: str, label: str | None = None, tool_profile: str = "general", **kwargs: Any) -> str:
         """Spawn a subagent to execute the given task."""
         running = self._manager.get_running_count()
         limit = MAX_CONCURRENT_SUBAGENTS 
@@ -51,6 +56,7 @@ class SpawnTool(Tool):
         return await self._manager.spawn(
             task=task,
             label=label,
+            tool_profile=tool_profile,
             origin_channel=self._origin_channel.get(),
             origin_chat_id=self._origin_chat_id.get(),
             session_key=self._session_key.get()
