@@ -1,5 +1,6 @@
 import asyncio
 import json
+from os import wait
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 
@@ -150,7 +151,8 @@ class AgentLoop:
             response = await self.provider.chat(
                 messages=messages,
                 tools=self.tool_registry.get_definations(),
-                model=self._get_model_name()
+                model=self._get_model_name(),
+                temperature=self._get_temperature()
             )
 
             if response.has_error:
@@ -278,3 +280,14 @@ class AgentLoop:
         except Exception as e:
             logger.debug("Could not load model name: {}", e)
             return None
+
+    def _get_temperature(self) -> float:
+        """Return the resolved startup model for readonly WebUI display."""
+        try:
+            from mybot.config.loader import load_config
+
+            temperature = load_config().resolve_preset().temperature
+            return temperature if temperature > 0 else 0.1
+        except Exception as e:
+            logger.error("Could not load model name: {}", e)
+            return 0.1 
