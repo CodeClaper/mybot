@@ -1,10 +1,16 @@
 import asyncio
+import sys
 import os
 import re
+import shutil
+
 from typing import Any
 
+from contextlib import suppress
+from loguru import logger
 from mybot.tools.base import Tool
 
+_IS_WINDOWS = sys.platform == "win32"
 
 class ShellTool(Tool):
     """Tool to execute shell commands."""
@@ -70,28 +76,18 @@ class ShellTool(Tool):
             env["PATH"] = env.get("PATH", "") + os.pathsep + self.path_append
 
         try:
-            process = await asyncio.create_subprocess_shell(
-                cmd=command,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                cwd=cwd,
-                env=env
-            )
-            
+            process = await self._spawn(command, cwd, env)
             try:
                 stdout, stderr = await asyncio.wait_for(
                     process.communicate(),
                     timeout=self.timeout
                 )
             except asyncio.TimeoutError:
-                process.kill()
-                # Wait for the process to fully terminate so pipes are
-                # drained and file descriptors are released.
-                try:
-                    await asyncio.wait_for(process.wait(), timeout=5.0)
-                except asyncio.TimeoutError:
-                    pass
+                await self._kill_process(process)
                 return f"Error: Command timed out after {self.timeout} seconds"
+            except asyncio.CancelledError:
+                await self._kill_process(process)
+                raise
 
             outputs = []
             
@@ -115,8 +111,47 @@ class ShellTool(Tool):
 
         except Exception as e:
             return f"Error executing command {command}: {str(e)}"
+    
+    
+    @staticmethod
+    async def _spawn(
+        command: str, cwd: str, env: dict[str, str],
+    ) -> asyncio.subprocess.Process:
+        """Launch *command* in a platform-appropriate shell."""
+        if _IS_WINDOWS:
+            # create_subprocess_exec re-quotes args via list2cmdline, which
+            # breaks commands containing paths with spaces (e.g. "D:\Program
+            # Files\python.exe" "script.py"). create_subprocess_shell passes
+            # the raw command string to COMSPEC without re-quoting.
+            return await asyncio.create_subprocess_shell(
+                command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=cwd,
+                env=env,
+            )
+        bash = shutil.which("bash") or "/bin/bash"
+        return await asyncio.create_subprocess_exec(
+            bash, "-l", "-c", command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=cwd,
+            env=env,
+        )
 
-
+    @staticmethod
+    async def _kill_process(process: asyncio.subprocess.Process) -> None:
+        """Kill a subprocess and reap it to prevent zombies."""
+        process.kill()
+        try:
+            with suppress(asyncio.TimeoutError):
+                await asyncio.wait_for(process.wait(), timeout=5.0)
+        finally:
+            if not _IS_WINDOWS:
+                try:
+                    os.waitpid(process.pid, os.WNOHANG)
+                except (ProcessLookupError, ChildProcessError) as e:
+                    logger.debug("Process already reaped or not found: {}", e)
 
     def _guard_command(self, command: str, cwd: str) -> str | None:
         cmd = command.strip()
