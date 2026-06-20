@@ -1,15 +1,17 @@
 
-
 from typing import Any
-from mybot.agent.subagent import SubagentManager
+from contextvars import ContextVar
+from mybot.agent.subagent import SubagentManager, MAX_CONCURRENT_SUBAGENTS
 from mybot.tools.base import Tool
-
 
 class SpawnTool(Tool):
     """Tool to spawn a subagent for background task execution."""
 
     def __init__(self, manager: SubagentManager) -> None:
         self._manager = manager
+        self._origin_channel: ContextVar[str] = ContextVar("spawn_origin_channel", default="cli")
+        self._origin_chat_id: ContextVar[str] = ContextVar("spawn_origin_chat_id", default="direct")
+        self._session_key: ContextVar[str] = ContextVar("spawn_session_key", default="cli:direct")
 
     @property
     def name(self) -> str:
@@ -39,7 +41,7 @@ class SpawnTool(Tool):
     async def execute(self, task: str, label: str | None = None, **kwargs: Any) -> str:
         """Spawn a subagent to execute the given task."""
         running = self._manager.get_running_count()
-        limit = self._manager.max_concurrent_subagents
+        limit = MAX_CONCURRENT_SUBAGENTS 
         if running >= limit:
             return (
                 f"Cannot spawn subagent: concurrency limit reached "
@@ -51,6 +53,5 @@ class SpawnTool(Tool):
             label=label,
             origin_channel=self._origin_channel.get(),
             origin_chat_id=self._origin_chat_id.get(),
-            session_key=self._session_key.get(),
-            origin_message_id=self._origin_message_id.get(),
+            session_key=self._session_key.get()
         )
