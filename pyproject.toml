@@ -36,7 +36,8 @@ dependencies = [
     "websockets>=16.0,<17.0",
     "websocket-client>=1.9.0,<2.0.0",
     "gmssl>=3.2.2",
-    "pywebview>=5.0"
+    "pywebview>=5.0",
+    "mcp>=1.26.0,<2.0.0",
 ]
 
 [project.optional-dependencies]
