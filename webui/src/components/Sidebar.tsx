@@ -56,7 +56,7 @@ export function Sidebar(props: SidebarProps) {
           <source srcSet="/brand/mybot_logo.webp" type="image/webp" />
           <img
             src="/brand/mybot_logo.png"
-            alt="nanobot"
+            alt="mybot"
             className="h-6 w-auto select-none object-contain opacity-95"
             draggable={false}
           />
