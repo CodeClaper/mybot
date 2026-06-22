@@ -22,7 +22,7 @@ interface ChatListProps {
 
 function titleFor(s: ChatSummary, fallbackTitle: string): string {
   const p = (s.title || s.preview)?.trim();
-  if (p) return p.length > 48 ? `${p.slice(0, 45)}…` : p;
+  if (p) return p.length > 20 ? `${p.slice(0, 17)}…` : p;
   return fallbackTitle;
 }
 
