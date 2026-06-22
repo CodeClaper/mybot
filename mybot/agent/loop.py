@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import AsyncExitStack
 import json
 from os import wait
 from pathlib import Path
@@ -13,7 +14,7 @@ from mybot.bus.queue import MessageBus
 from mybot.commands.builtin import register_builtin_commands
 from mybot.commands.router import CommandContext, CommandRouter
 from mybot.config.path import get_worksapce_path
-from mybot.config.schema import Config
+from mybot.config.schema import Config, MCPServerConfig
 from mybot.context.context import ContextBuilder
 from mybot.context.session import Session, SessionManager
 from mybot.providers.base import BaseProvider
@@ -45,7 +46,8 @@ class AgentLoop:
         workspace: Path,
         bus: MessageBus,
         session_manager: SessionManager,
-        config: Config
+        config: Config,
+        mcp_servers: dict[str, MCPServerConfig] | None = None,
     ) -> None:
         self._running = False
         self.max_iterations = 100
@@ -65,12 +67,17 @@ class AgentLoop:
         )
         self._register_defaul_tools()
         self.commands = CommandRouter()
+        self._mcp_servers = mcp_servers or {}
+        self._mcp_stacks: dict[str, AsyncExitStack] = {}
+        self._mcp_connected = False
+        self._mcp_connecting = False
         register_builtin_commands(self.commands)
 
     async def run(self) -> None:
         """Agent loop run."""
         self._running = True
-
+        await self._connect_mcp()
+        logger.info("Agent loop started")
         while self._running:
             try:
                 msg = await asyncio.wait_for(self.bus.consume_inbound(), timeout=1.0)
@@ -97,6 +104,28 @@ class AgentLoop:
         self.tools.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
         self.tools.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
         self.tools.register(SpawnTool(manager=self.subagents))
+
+    async def _connect_mcp(self) -> None:
+        """Connect to configured MCP servers (one-time, lazy)."""
+        if self._mcp_connected or self._mcp_connecting or not self._mcp_servers:
+            return
+        self._mcp_connecting = True
+        from mybot.tools.mcp import connect_mcp_servers
+
+        try:
+            self._mcp_stacks = await connect_mcp_servers(self._mcp_servers, self.tools)
+            if self._mcp_stacks:
+                self._mcp_connected = True
+            else:
+                logger.warning("No MCP servers connected successfully (will retry next message)")
+        except asyncio.CancelledError:
+            logger.warning("MCP connection cancelled (will retry next message)")
+            self._mcp_stacks.clear()
+        except BaseException as e:
+            logger.warning("Failed to connect MCP servers (will retry next message): {}", e)
+            self._mcp_stacks.clear()
+        finally:
+            self._mcp_connecting = False
 
     async def _dispatch(self, msg: InboundMessage) -> None:
         """Dispath the message."""
