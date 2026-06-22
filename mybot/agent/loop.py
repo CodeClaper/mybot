@@ -20,7 +20,7 @@ from mybot.providers.base import BaseProvider
 from mybot.tools.fielstate import FileStates
 from mybot.tools.filesystem import ReadFileTool, WriteFileTool
 from mybot.tools.message import MessageTool
-from mybot.tools.registry import TooRegistry
+from mybot.tools.registry import ToolRegistry
 from mybot.tools.shell import ShellTool
 from mybot.tools.spawn import SpawnTool
 from mybot.tools.web import WebFetchTool, WebSearchTool
@@ -55,7 +55,7 @@ class AgentLoop:
         self.session_manager = session_manager or SessionManager(self.workspace)
         self.config = config
         self.context = ContextBuilder(workspace)
-        self.tools = TooRegistry()
+        self.tools = ToolRegistry()
         self.subagents = SubagentManager(
             provider=provider,
             workspace=workspace,

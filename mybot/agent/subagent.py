@@ -16,7 +16,7 @@ from mybot.providers.base import BaseProvider
 from mybot.tools.fielstate import FileStates
 from mybot.tools.filesystem import ReadFileTool, WriteFileTool
 from mybot.tools.message import MessageTool
-from mybot.tools.registry import TooRegistry
+from mybot.tools.registry import ToolRegistry
 from mybot.tools.shell import ShellTool
 from mybot.tools.web import WebFetchTool, WebSearchTool 
 
@@ -96,7 +96,7 @@ class SubagentManager:
         """Execute the subagent task and announce the result."""
         logger.info("Subagent [{}] starting task: {}", task_id, label)
         try:
-            tools = TooRegistry()
+            tools = ToolRegistry()
             self._register_tools(tools, profile=tool_profile)
             system_prompt = self._build_subagent_prompt()
             messages: list[dict[str, Any]] = [

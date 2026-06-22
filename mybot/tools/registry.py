@@ -4,7 +4,7 @@ from typing import Any
 from mybot.tools.base import Tool
 
 
-class TooRegistry:
+class ToolRegistry:
     """
     Registry for agent tools.
     """
