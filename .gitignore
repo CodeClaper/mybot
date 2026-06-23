@@ -4,6 +4,9 @@
 dist/
 build/
 docs/
+.claude/
+.git/
+.vscode/
 *.egg-info/
 *.egg
 *.pyc
