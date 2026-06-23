@@ -90,11 +90,12 @@ def agent(
     bus = MessageBus()
     config = load_config()
     agent = AgentLoop(
-        provider=_make_provider(config), 
+        provider=_make_provider(config),
         workspace=get_home_path(),
         bus=bus,
         session_manager=SessionManager(get_home_path()),
-        config=config
+        config=config,
+        mcp_servers=config.tools.mcp_servers or None,
     )
 
     model = config.agents.defaults.model
@@ -198,11 +199,12 @@ def gateway(
     session_manager=SessionManager(get_home_path())
 
     agent = AgentLoop(
-        provider= provider, 
+        provider=provider,
         workspace=get_home_path(),
         bus=bus,
         session_manager=session_manager,
-        config=config
+        config=config,
+        mcp_servers=config.tools.mcp_servers or None,
     )
 
     channels = ChannelManager(config, bus)
