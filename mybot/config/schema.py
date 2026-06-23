@@ -138,6 +138,7 @@ class ToolConfig(Base):
     """Tool configuration. """
 
     web: WebToolsConfig = Field(default_factory=WebToolsConfig)
+    mcp_servers: dict[str, MCPServerConfig] = Field(default_factory=dict)
     
 
 class ModelPresetConfig(Base):
