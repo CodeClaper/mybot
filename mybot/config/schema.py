@@ -122,6 +122,11 @@ class WebToolsConfig(Base):
     proxy: str | None = None
     search: WebSearchConfig = Field(default_factory=WebSearchConfig)
 
+class ExecToolConfig(Base):
+    """Exec tool configuration."""
+    timeout: int = 60
+    sandbox: str = ""
+
 class MCPServerConfig(Base):
     """MCP server connection configuration (stdio or HTTP)."""
 
@@ -138,6 +143,7 @@ class ToolConfig(Base):
     """Tool configuration. """
 
     web: WebToolsConfig = Field(default_factory=WebToolsConfig)
+    exec: ExecToolConfig = Field(default_factory=ExecToolConfig)
     mcp_servers: dict[str, MCPServerConfig] = Field(default_factory=dict)
     
 

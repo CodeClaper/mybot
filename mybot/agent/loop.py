@@ -93,11 +93,12 @@ class AgentLoop:
     def _register_defaul_tools(self) -> None:
         """Register default tools."""
         web_config = self.config.tools.web
+        exec_config = self.config.tools.exec
         workspace = get_worksapce_path()
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
         skills_dir = workspace / "skills"
-        self.tools.register(ShellTool())
+        self.tools.register(ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox))
         self.tools.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
         self.tools.register(WebFetchTool(proxy=web_config.proxy))
         self.tools.register(MessageTool(send_callback=self.bus.publish_outbound))

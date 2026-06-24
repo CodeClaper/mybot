@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 import sys
 import os
 import re
@@ -9,6 +10,7 @@ from typing import Any
 from contextlib import suppress
 from loguru import logger
 from mybot.tools.base import Tool
+from mybot.tools.sandbox import wrap_command
 
 _IS_WINDOWS = sys.platform == "win32"
 
@@ -19,11 +21,13 @@ class ShellTool(Tool):
         self,
         timeout: int = 60,
         working_dir: str | None = None,
-        path_append: str = ""
+        path_append: str = "",
+        sandbox: str = ""
     ) -> None:
         self.timeout = timeout
         self.working_dir = working_dir
         self.path_append = path_append
+        self.sandbox = sandbox
         self.deny_patterns = [
             r"\brm\s+-[rf]{1,2}\b",          # rm -r, rm -rf, rm -fr
             r"\bdel\s+/[fq]\b",              # del /f, del /q
@@ -70,6 +74,17 @@ class ShellTool(Tool):
         guard_error = self._guard_command(command, cwd)
         if guard_error:
             return guard_error
+
+        if self.sandbox:
+            if _IS_WINDOWS:
+                logger.warning(
+                    "Sandbox '{}' is not supported on Windows; running unsandboxed",
+                    self.sandbox,
+                )
+            else:
+                workspace = self.working_dir or cwd
+                command = wrap_command(self.sandbox, command, workspace, cwd)
+                cwd = str(Path(workspace).resolve())
 
         env = os.environ.copy()
         if self.path_append:
