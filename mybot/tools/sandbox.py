@@ -1,7 +1,12 @@
 import shlex
+import sys
 from pathlib import Path
+from loguru import logger
 
 from mybot.config.path import get_media_dir
+
+_IS_WINDOWS = sys.platform == "win32"
+_IS_LINUX = sys.platform.startswith("linux")
 
 def _bwrap(command: str, workspace: str, cwd: str) -> str:
     """Wrap command in a bubblewrap sandbox (requires bwrap in container).
@@ -10,6 +15,11 @@ def _bwrap(command: str, workspace: str, cwd: str) -> str:
     config.json) is hidden behind a fresh tmpfs.  The media directory is
     bind-mounted read-only so exec commands can read uploaded attachments.
     """
+    if not _IS_LINUX:
+        raise RuntimeError(
+            f"bwrap sandbox is only supported on Linux (current platform: {sys.platform})"
+        )
+
     ws = Path(workspace).resolve()
     media = get_media_dir().resolve()
 
@@ -43,5 +53,6 @@ _BACKENDS = {"bwrap": _bwrap}
 def wrap_command(sandbox: str, command: str, workspace: str, cwd: str) -> str:
     """Wrap *command* using the named sandbox backend."""
     if backend := _BACKENDS.get(sandbox):
+        logger.debug(f"Using sandbox type: {sandbox}")
         return backend(command, workspace, cwd)
     raise ValueError(f"Unknown sandbox backend {sandbox!r}. Available: {list(_BACKENDS)}")
