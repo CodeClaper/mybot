@@ -8,6 +8,7 @@ from mybot.config.path import get_media_dir
 
 _IS_WINDOWS = sys.platform == "win32"
 _IS_LINUX = sys.platform.startswith("linux")
+_IS_DARWIN = sys.platform == "darwin"
 
 def _bwrap(command: str, workspace: str, cwd: str) -> str:
     """Wrap command in a bubblewrap sandbox (requires bwrap in container).
@@ -101,6 +102,11 @@ def _sandbox_exec(command: str, workspace: str, cwd: str) -> str:
     by default — the profile only allows access to the workspace itself.
     The media directory is mounted read-only via the profile.
     """
+    if not _IS_DARWIN:
+        raise RuntimeError(
+            f"sandbox-exec sandbox is only supported on macOS (current platform: {sys.platform})"
+        )
+
     ws = Path(workspace).resolve()
     media = get_media_dir().resolve()
 
