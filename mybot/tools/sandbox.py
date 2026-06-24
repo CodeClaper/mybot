@@ -1,5 +1,6 @@
 import shlex
 import sys
+import tempfile
 from pathlib import Path
 from loguru import logger
 
@@ -46,8 +47,84 @@ def _bwrap(command: str, workspace: str, cwd: str) -> str:
     ]
     return shlex.join(args)
 
+def _build_sandbox_profile(workspace: str, media: str) -> str:
+    """Build a macOS sandbox-exec profile (Apple Sandbox Profile Language).
 
-_BACKENDS = {"bwrap": _bwrap}
+    Default-deny with explicit allowances:
+    - Read-write: workspace, /tmp, /var/tmp
+    - Read-only: media, system paths (/usr, /bin, /etc, /dev, ...)
+    - Process execution from standard binary paths
+    - Outbound network (matching bwrap behaviour which doesn't restrict it)
+    """
+    return f"""(version 1)
+(deny default)
+(allow signal (target self))
+(allow sysctl-read)
+(allow process-exec
+    (subpath "/usr/bin")
+    (subpath "/usr/sbin")
+    (subpath "/usr/libexec")
+    (subpath "/bin")
+    (subpath "/sbin")
+    (subpath "/opt/homebrew/bin")
+    (subpath "/usr/local/bin")
+)
+(allow file-read*
+    (subpath "/usr")
+    (subpath "/bin")
+    (subpath "/sbin")
+    (subpath "/etc")
+    (subpath "/private/etc")
+    (subpath "/var")
+    (subpath "/dev")
+    (subpath "/System/Library")
+    (subpath "/Library/Apple")
+    (subpath "/Library/Frameworks")
+    (subpath "/opt/homebrew")
+    (subpath "/usr/local")
+    (literal "{media}")
+)
+(allow file-read* file-write*
+    (subpath "{workspace}")
+    (subpath "/private/tmp")
+    (subpath "/tmp")
+    (subpath "/private/var/tmp")
+)
+(allow network-outbound)
+"""
+
+
+def _sandbox_exec(command: str, workspace: str, cwd: str) -> str:
+    """Wrap command using macOS sandbox-exec for sandboxed execution.
+
+    The workspace parent directory (where config.json lives) is inaccessible
+    by default — the profile only allows access to the workspace itself.
+    The media directory is mounted read-only via the profile.
+    """
+    ws = Path(workspace).resolve()
+    media = get_media_dir().resolve()
+
+    try:
+        sandbox_cwd = str(ws / Path(cwd).resolve().relative_to(ws))
+    except ValueError:
+        sandbox_cwd = str(ws)
+
+    profile = _build_sandbox_profile(str(ws), str(media))
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".sb", delete=False, prefix="mybot_sandbox_"
+    ) as f:
+        f.write(profile)
+        profile_path = f.name
+
+    # sandbox-exec has no --chdir, so prepend cd to set the working directory
+    wrapped = f"cd {shlex.quote(sandbox_cwd)} && {command}"
+    args = [
+        "sandbox-exec", "-f", profile_path,
+        "--", "sh", "-c", wrapped,
+    ]
+    return shlex.join(args)
+
+_BACKENDS = {"bwrap": _bwrap, "sand_exec": _sandbox_exec}
 
 
 def wrap_command(sandbox: str, command: str, workspace: str, cwd: str) -> str:
