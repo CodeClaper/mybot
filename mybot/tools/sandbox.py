@@ -6,7 +6,6 @@ from loguru import logger
 
 from mybot.config.path import get_media_dir
 
-_IS_WINDOWS = sys.platform == "win32"
 _IS_LINUX = sys.platform.startswith("linux")
 _IS_DARWIN = sys.platform == "darwin"
 
@@ -135,6 +134,7 @@ _BACKENDS = {"bwrap": _bwrap, "sand_exec": _sandbox_exec}
 
 def wrap_command(sandbox: str, command: str, workspace: str, cwd: str) -> str:
     """Wrap *command* using the named sandbox backend."""
+    logger.debug(f"workspace: {workspace}, cwd: {cwd}")
     if backend := _BACKENDS.get(sandbox):
         logger.debug(f"Using sandbox type: {sandbox}")
         return backend(command, workspace, cwd)

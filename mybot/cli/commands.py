@@ -91,9 +91,9 @@ def agent(
     config = load_config()
     agent = AgentLoop(
         provider=_make_provider(config),
-        workspace=get_home_path(),
+        workspace=get_worksapce_path(),
         bus=bus,
-        session_manager=SessionManager(get_home_path()),
+        session_manager=SessionManager(get_worksapce_path()),
         config=config,
         mcp_servers=config.tools.mcp_servers or None,
     )

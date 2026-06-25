@@ -94,16 +94,15 @@ class AgentLoop:
         """Register default tools."""
         web_config = self.config.tools.web
         exec_config = self.config.tools.exec
-        workspace = get_worksapce_path()
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
-        skills_dir = workspace / "skills"
-        self.tools.register(ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox))
+        skills_dir = self.workspace / "skills"
+        self.tools.register(ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox, working_dir=str(self.workspace)))
         self.tools.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
         self.tools.register(WebFetchTool(proxy=web_config.proxy))
         self.tools.register(MessageTool(send_callback=self.bus.publish_outbound))
-        self.tools.register(ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
-        self.tools.register(WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states))
+        self.tools.register(ReadFileTool(workspace=self.workspace, allowed_dir=self.workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states))
+        self.tools.register(WriteFileTool(workspace=self.workspace, allowed_dir=skills_dir, file_states=file_states))
         self.tools.register(SpawnTool(manager=self.subagents))
 
     async def _connect_mcp(self) -> None:

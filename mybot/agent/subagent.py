@@ -171,13 +171,14 @@ class SubagentManager:
             profile = "general"
 
         web_config = self.config.tools.web
+        exec_config = self.config.tools.exec
         workspace = get_worksapce_path()
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
         skills_dir = workspace / "skills"
 
         tool_factories = {
-            "shell": lambda: ShellTool(),
+            "shell": lambda: ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox),
             "web_search": lambda: WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key),
             "web_fetch": lambda: WebFetchTool(proxy=web_config.proxy),
             "message": lambda: MessageTool(send_callback=self.bus.publish_outbound),
