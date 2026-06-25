@@ -175,25 +175,29 @@
     "empty": {
       "greeting": "我可以帮你做什么？",
       "quickActions": {
-        "databaseManager": {
-          "title": "数据源管理",
-          "prompt": "帮我新建一个数据源或者查看我有哪些数据源。"
+        "plan": {
+          "title": "创建项目计划",
+          "prompt": "帮我为接下来要做的事情写一份简洁的项目计划。"
         },
-        "resourceManager": {
-          "title": "数据资源管理",
-          "prompt": "帮我新建一个（库表/文件/电子表格/接口）数据资源"
+        "analyze": {
+          "title": "分析这些数据",
+          "prompt": "帮我分析这些数据，并指出最重要的模式。"
         },
-        "resourceRegister": {
-          "title": "数据资源登记管理",
-          "prompt": "帮我向区域平台登记、登记变更、登记注销一个数据资源"
+        "brainstorm": {
+          "title": "头脑风暴想法",
+          "prompt": "围绕这个问题头脑风暴几个实用方案，并说明取舍。"
         },
-        "resourceShare": {
-          "title": "数据资源共享管理",
-          "prompt": "帮我向共享平台注册一个数据资源"
+        "code": {
+          "title": "编写代码",
+          "prompt": "帮我为这个任务写代码，先从最小可用改动开始。"
+        },
+        "summarize": {
+          "title": "总结这份文档",
+          "prompt": "帮我总结这份文档，并列出关键要点。"
         },
         "more": {
           "title": "更多",
-          "prompt": "展示更多的可信数据空间的能力。"
+          "prompt": "展示几个你在这个工作区里可以帮我的实用方式。"
         }
       },
       "imageQuickActions": {
