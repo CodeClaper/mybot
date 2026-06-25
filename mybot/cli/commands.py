@@ -200,7 +200,7 @@ def gateway(
 
     agent = AgentLoop(
         provider=provider,
-        workspace=get_home_path(),
+        workspace=get_worksapce_path(),
         bus=bus,
         session_manager=session_manager,
         config=config,

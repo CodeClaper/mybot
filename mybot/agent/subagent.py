@@ -10,7 +10,7 @@ from loguru import logger
 from mybot.agent.skill import BUILTIN_SKILL_DIR
 from mybot.bus.message import InboundMessage
 from mybot.bus.queue import MessageBus
-from mybot.config.path import get_worksapce_path
+from mybot.config.path import get_home_path, get_worksapce_path
 from mybot.config.schema import Config
 from mybot.providers.base import BaseProvider
 from mybot.tools.fielstate import FileStates
@@ -172,18 +172,17 @@ class SubagentManager:
 
         web_config = self.config.tools.web
         exec_config = self.config.tools.exec
-        workspace = get_worksapce_path()
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
-        skills_dir = workspace / "skills"
+        skills_dir = get_home_path() / "skills"
 
         tool_factories = {
             "shell": lambda: ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox),
             "web_search": lambda: WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key),
             "web_fetch": lambda: WebFetchTool(proxy=web_config.proxy),
             "message": lambda: MessageTool(send_callback=self.bus.publish_outbound),
-            "read_file": lambda: ReadFileTool(workspace=workspace, allowed_dir=workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states),
-            "write_file": lambda: WriteFileTool(workspace=workspace, allowed_dir=skills_dir, file_states=file_states),
+            "read_file": lambda: ReadFileTool(workspace=self.workspace, allowed_dir=self.workspace, extra_allowed_dirs=extra_allowed_dir, file_states=file_states),
+            "write_file": lambda: WriteFileTool(workspace=self.workspace, allowed_dir=skills_dir, file_states=file_states),
         }
 
         for tool_name in TOOL_PROFILES[profile]:

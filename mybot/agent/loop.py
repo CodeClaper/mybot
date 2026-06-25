@@ -13,7 +13,7 @@ from mybot.bus.message import InboundMessage, OutboundMessage
 from mybot.bus.queue import MessageBus
 from mybot.commands.builtin import register_builtin_commands
 from mybot.commands.router import CommandContext, CommandRouter
-from mybot.config.path import get_worksapce_path
+from mybot.config.path import get_home_path, get_worksapce_path
 from mybot.config.schema import Config, MCPServerConfig
 from mybot.context.context import ContextBuilder
 from mybot.context.session import Session, SessionManager
@@ -96,7 +96,7 @@ class AgentLoop:
         exec_config = self.config.tools.exec
         extra_allowed_dir = [BUILTIN_SKILL_DIR] if BUILTIN_SKILL_DIR.exists() else None
         file_states = FileStates()
-        skills_dir = self.workspace / "skills"
+        skills_dir = get_home_path() / "skills"
         self.tools.register(ShellTool(timeout=exec_config.timeout, sandbox=exec_config.sandbox, working_dir=str(self.workspace)))
         self.tools.register(WebSearchTool(proxy=web_config.proxy, api_key=web_config.search.api_key))
         self.tools.register(WebFetchTool(proxy=web_config.proxy))
