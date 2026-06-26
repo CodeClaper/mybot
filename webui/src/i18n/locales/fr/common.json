@@ -164,25 +164,29 @@
       "description": "Posez des questions, poursuivez votre travail local ou démarrez un nouveau fil.",
       "greeting": "Que puis-je faire pour vous ?",
       "quickActions": {
-        "databaseManager": {
-          "title": "Gestion des sources de données",
-          "prompt": "Aidez-moi à créer une source de données ou à consulter mes sources existantes."
+        "plan": {
+          "title": "Créer un plan de projet",
+          "prompt": "Aidez-moi à rédiger un plan de projet concis pour ce que je dois faire ensuite."
         },
-        "resourceManager": {
-          "title": "Gestion des ressources de données",
-          "prompt": "Aidez-moi à créer une ressource de données (table/fichier/tableur/API)."
+        "analyze": {
+          "title": "Analyser ces données",
+          "prompt": "Aidez-moi à analyser ces données et à identifier les tendances les plus importantes."
         },
-        "resourceRegister": {
-          "title": "Enregistrement des ressources",
-          "prompt": "Aidez-moi à enregistrer, modifier ou supprimer une ressource de données auprès de la plateforme régionale."
+        "brainstorm": {
+          "title": "Idées de brainstorming",
+          "prompt": "Proposez plusieurs approches pratiques pour ce problème et expliquez les compromis."
         },
-        "resourceShare": {
-          "title": "Partage des ressources de données",
-          "prompt": "Aidez-moi à enregistrer une ressource de données sur la plateforme de partage."
+        "code": {
+          "title": "Écrire du code",
+          "prompt": "Aidez-moi à écrire du code pour cette tâche, en commençant par le plus petit changement fonctionnel."
+        },
+        "summarize": {
+          "title": "Résumer ce document",
+          "prompt": "Aidez-moi à résumer ce document et à en lister les points clés."
         },
         "more": {
           "title": "Plus",
-          "prompt": "Découvrez plus de capacités de l’espace de données de confiance."
+          "prompt": "Montrez-moi quelques façons utiles de m’aider dans cet espace de travail."
         }
       },
       "imageQuickActions": {

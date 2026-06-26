@@ -164,25 +164,29 @@
       "description": "你可以提問、延續本地工作，或是開始新的執行緒。",
       "greeting": "我可以幫你做什麼？",
       "quickActions": {
-        "databaseManager": {
-          "title": "資料來源管理",
-          "prompt": "幫我新增一個資料來源或查看我有哪些資料來源。"
+        "plan": {
+          "title": "建立專案計劃",
+          "prompt": "幫我為接下來要做的事情寫一份簡潔的專案計劃。"
         },
-        "resourceManager": {
-          "title": "資料資源管理",
-          "prompt": "幫我新增一個（庫表/檔案/試算表/介面）資料資源"
+        "analyze": {
+          "title": "分析這些資料",
+          "prompt": "幫我分析這些資料，並指出最重要的模式。"
         },
-        "resourceRegister": {
-          "title": "資料資源登記管理",
-          "prompt": "幫我向區域平台登記、登記變更、登記註銷一個資料資源"
+        "brainstorm": {
+          "title": "腦力激盪想法",
+          "prompt": "針對這個問題腦力激盪幾個實用方案，並說明取捨。"
         },
-        "resourceShare": {
-          "title": "資料資源共享管理",
-          "prompt": "幫我向共享平台註冊一個資料資源"
+        "code": {
+          "title": "編寫程式碼",
+          "prompt": "幫我為這個任務寫程式碼，先從最小可用改動開始。"
+        },
+        "summarize": {
+          "title": "總結這份文件",
+          "prompt": "幫我總結這份文件，並列出關鍵要點。"
         },
         "more": {
           "title": "更多",
-          "prompt": "展示更多的可信資料空間的能力。"
+          "prompt": "展示幾個你在這個工作區裡可以幫我的實用方式。"
         }
       },
       "imageQuickActions": {

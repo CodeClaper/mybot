@@ -2,8 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import {
   BarChart3,
   ChevronRight,
+  ClipboardList,
   Code2,
-  LayoutGrid,
+  FileText,
   Lightbulb,
   MoreHorizontal,
 } from "lucide-react";
@@ -41,10 +42,11 @@ function toModelBadgeLabel(modelName: string | null): string | null {
 }
 
 const QUICK_ACTION_KEYS = [
-  { key: "databaseManager", icon: LayoutGrid, tone: "text-[#f25b8f]" },
-  { key: "resourceManager", icon: BarChart3, tone: "text-[#4f9de8]" },
-  { key: "resourceRegister", icon: Lightbulb, tone: "text-[#53c59d]" },
-  { key: "resourceShare", icon: Code2, tone: "text-[#eba45d]" },
+  { key: "plan", icon: ClipboardList, tone: "text-[#f25b8f]" },
+  { key: "analyze", icon: BarChart3, tone: "text-[#4f9de8]" },
+  { key: "brainstorm", icon: Lightbulb, tone: "text-[#53c59d]" },
+  { key: "code", icon: Code2, tone: "text-[#eba45d]" },
+  { key: "summarize", icon: FileText, tone: "text-[#a78bfa]" },
   { key: "more", icon: MoreHorizontal, tone: "text-muted-foreground/65" },
 ] as const;
 

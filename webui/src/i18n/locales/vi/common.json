@@ -164,25 +164,29 @@
       "description": "Hãy đặt câu hỏi, tiếp tục công việc cục bộ hoặc bắt đầu một luồng mới.",
       "greeting": "Tôi có thể giúp gì cho bạn?",
       "quickActions": {
-        "databaseManager": {
-          "title": "Quản lý nguồn dữ liệu",
-          "prompt": "Giúp tôi tạo một nguồn dữ liệu hoặc xem tôi có những nguồn dữ liệu nào."
+        "plan": {
+          "title": "Tạo kế hoạch dự án",
+          "prompt": "Giúp tôi viết một kế hoạch dự án ngắn gọn cho những việc cần làm tiếp theo."
         },
-        "resourceManager": {
-          "title": "Quản lý tài nguyên dữ liệu",
-          "prompt": "Giúp tôi tạo một tài nguyên dữ liệu (bảng/tệp/bảng tính/API)."
+        "analyze": {
+          "title": "Phân tích dữ liệu này",
+          "prompt": "Giúp tôi phân tích dữ liệu này và chỉ ra các mẫu quan trọng nhất."
         },
-        "resourceRegister": {
-          "title": "Đăng ký tài nguyên dữ liệu",
-          "prompt": "Giúp tôi đăng ký, thay đổi đăng ký hoặc hủy đăng ký một tài nguyên dữ liệu với nền tảng khu vực."
+        "brainstorm": {
+          "title": "Động não ý tưởng",
+          "prompt": "Động não một số cách tiếp cận thực tế cho vấn đề này và giải thích các đánh đổi."
         },
-        "resourceShare": {
-          "title": "Chia sẻ tài nguyên dữ liệu",
-          "prompt": "Giúp tôi đăng ký một tài nguyên dữ liệu trên nền tảng chia sẻ."
+        "code": {
+          "title": "Viết mã",
+          "prompt": "Giúp tôi viết mã cho tác vụ này, bắt đầu với thay đổi nhỏ nhất có thể hoạt động."
+        },
+        "summarize": {
+          "title": "Tóm tắt tài liệu này",
+          "prompt": "Giúp tôi tóm tắt tài liệu này và liệt kê các điểm chính."
         },
         "more": {
           "title": "Thêm",
-          "prompt": "Khám phá thêm các khả năng của không gian dữ liệu tin cậy."
+          "prompt": "Cho tôi thấy một vài cách hữu ích bạn có thể giúp trong không gian làm việc này."
         }
       },
       "imageQuickActions": {

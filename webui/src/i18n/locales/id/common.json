@@ -164,25 +164,29 @@
       "description": "Ajukan pertanyaan, lanjutkan pekerjaan lokal, atau mulai thread baru.",
       "greeting": "Apa yang bisa saya bantu?",
       "quickActions": {
-        "databaseManager": {
-          "title": "Manajemen Sumber Data",
-          "prompt": "Bantu saya membuat sumber data baru atau lihat sumber data yang sudah ada."
+        "plan": {
+          "title": "Buat rencana proyek",
+          "prompt": "Bantu saya menulis rencana proyek yang ringkas untuk hal yang perlu saya lakukan selanjutnya."
         },
-        "resourceManager": {
-          "title": "Manajemen Sumber Daya Data",
-          "prompt": "Bantu saya membuat sumber daya data (tabel/file/spreadsheet/API) baru."
+        "analyze": {
+          "title": "Analisis data ini",
+          "prompt": "Bantu saya menganalisis data ini dan temukan pola yang paling penting."
         },
-        "resourceRegister": {
-          "title": "Pendaftaran Sumber Daya Data",
-          "prompt": "Bantu saya mendaftarkan, mengubah, atau menghapus sumber daya data ke platform regional."
+        "brainstorm": {
+          "title": "Curah pendapat ide",
+          "prompt": "Lakukan curah pendapat beberapa pendekatan praktis untuk masalah ini dan jelaskan kelebihan serta kekurangannya."
         },
-        "resourceShare": {
-          "title": "Berbagi Sumber Daya Data",
-          "prompt": "Bantu saya mendaftarkan sumber daya data di platform berbagi."
+        "code": {
+          "title": "Tulis kode",
+          "prompt": "Bantu saya menulis kode untuk tugas ini, dimulai dari perubahan terkecil yang dapat berfungsi."
+        },
+        "summarize": {
+          "title": "Ringkas dokumen ini",
+          "prompt": "Bantu saya merangkum dokumen ini dan buat daftar poin-poin utamanya."
         },
         "more": {
           "title": "Lainnya",
-          "prompt": "Jelajahi lebih banyak kemampuan trusted data space."
+          "prompt": "Tunjukkan beberapa cara bermanfaat yang dapat Anda bantu di ruang kerja ini."
         }
       },
       "imageQuickActions": {

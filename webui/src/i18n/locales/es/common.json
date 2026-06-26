@@ -164,25 +164,29 @@
       "description": "Haz preguntas, continúa tu trabajo local o inicia un nuevo hilo.",
       "greeting": "¿Qué puedo hacer por ti?",
       "quickActions": {
-        "databaseManager": {
-          "title": "Gestión de fuentes de datos",
-          "prompt": "Ayúdame a crear una fuente de datos o a consultar las que tengo."
+        "plan": {
+          "title": "Crear un plan de proyecto",
+          "prompt": "Ayúdame a escribir un plan de proyecto conciso para lo que necesito hacer a continuación."
         },
-        "resourceManager": {
-          "title": "Gestión de recursos de datos",
-          "prompt": "Ayúdame a crear un recurso de datos (tabla/archivo/hoja de cálculo/API)."
+        "analyze": {
+          "title": "Analizar estos datos",
+          "prompt": "Ayúdame a analizar estos datos y señalar los patrones más importantes."
         },
-        "resourceRegister": {
-          "title": "Registro de recursos de datos",
-          "prompt": "Ayúdame a registrar, modificar o dar de baja un recurso de datos en la plataforma regional."
+        "brainstorm": {
+          "title": "Lluvia de ideas",
+          "prompt": "Haz una lluvia de ideas sobre varios enfoques prácticos para este problema y explica las ventajas y desventajas."
         },
-        "resourceShare": {
-          "title": "Compartición de recursos de datos",
-          "prompt": "Ayúdame a registrar un recurso de datos en la plataforma de compartición."
+        "code": {
+          "title": "Escribir código",
+          "prompt": "Ayúdame a escribir código para esta tarea, empezando con el cambio funcional más pequeño."
+        },
+        "summarize": {
+          "title": "Resumir este documento",
+          "prompt": "Ayúdame a resumir este documento y enumerar los puntos clave."
         },
         "more": {
           "title": "Más",
-          "prompt": "Explora más capacidades del espacio de datos confiable."
+          "prompt": "Muéstrame algunas formas útiles en las que puedes ayudarme en este espacio de trabajo."
         }
       },
       "imageQuickActions": {

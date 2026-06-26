@@ -187,25 +187,29 @@
     "empty": {
       "greeting": "What can I do for you?",
       "quickActions": {
-        "databaseManager": {
-          "title": "Data Source Management",
-          "prompt": "Help me create a data source or view my existing data sources."
+        "plan": {
+          "title": "Create a project plan",
+          "prompt": "Help me write a concise project plan for what I need to do next."
         },
-        "resourceManager": {
-          "title": "Data Resource Management",
-          "prompt": "Help me create a (table/file/spreadsheet/API) data resource."
+        "analyze": {
+          "title": "Analyze this data",
+          "prompt": "Help me analyze this data and point out the most important patterns."
         },
-        "resourceRegister": {
-          "title": "Data Resource Registration",
-          "prompt": "Help me register, update, or deregister a data resource with the regional platform."
+        "brainstorm": {
+          "title": "Brainstorm ideas",
+          "prompt": "Brainstorm several practical approaches for this problem and explain the tradeoffs."
         },
-        "resourceShare": {
-          "title": "Data Resource Sharing",
-          "prompt": "Help me register a data resource on the sharing platform."
+        "code": {
+          "title": "Write code",
+          "prompt": "Help me write code for this task, starting with the smallest working change."
+        },
+        "summarize": {
+          "title": "Summarize this document",
+          "prompt": "Help me summarize this document and list the key points."
         },
         "more": {
           "title": "More",
-          "prompt": "Explore more trusted data space capabilities."
+          "prompt": "Show me a few useful ways you can help in this workspace."
         }
       },
       "imageQuickActions": {
