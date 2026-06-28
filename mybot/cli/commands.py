@@ -312,7 +312,10 @@ def _make_provider(config: Config) -> BaseProvider:
     provider_name = config.agents.defaults.provider
     provider = config.get_provider(provider_name)
     if provider_name == "local":
-        return LocalProvider()
+        return LocalProvider(
+            api_key=provider.api_key if provider else None,
+            api_base=provider.api_base if provider else None,
+        )
     elif provider_name == "deepseek" or "deepseek" in provider_name:
         return DeepSeekProvider(
             api_key=provider.api_key if provider else None,

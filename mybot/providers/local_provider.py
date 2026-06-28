@@ -4,6 +4,7 @@ from typing import Any
 
 import json_repair
 from openai import AsyncOpenAI
+from loguru import logger
 
 from mybot.providers.base import BaseProvider, LLMResponse, ToolCallRequest
 
@@ -15,14 +16,15 @@ def _short_tool_id() -> str:
 class LocalProvider(BaseProvider):
     def __init__(
         self, 
-        api_key: str = "sk-no-key", 
-        api_base: str = "http://localhost:8080/v1"
+        api_key: str | None = None, 
+        api_base: str | None = None
     ) -> None:
         super().__init__(api_key, api_base)
         self._client = AsyncOpenAI(
-            api_key=api_key,
-            base_url=api_base
+            api_key=api_key or "sk-12345678",
+            base_url=api_base or "http://127.0.0.1:7788/v1"
         )
+        logger.debug("Using local provider")
 
     async def chat(
         self, 
